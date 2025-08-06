@@ -6,8 +6,8 @@ import { useToast } from "@/hooks/use-toast";
 interface TimeSlot {
   time: string;
   period: string;
-  content: string;
-  isRenato: boolean;
+  classes: string[];
+  hasRenato: boolean;
   isEmpty: boolean;
 }
 
@@ -30,14 +30,14 @@ const ScheduleDashboard = () => {
     6: 'SÁBADO'
   };
 
-  const timeSlots = [
-    { name: '1º Tempo', period: '07:30 - 08:15' },
-    { name: '2º Tempo', period: '08:15 - 09:00' },
-    { name: '3º Tempo', period: '09:20 - 10:05' },
-    { name: '4º Tempo', period: '10:05 - 10:50' },
-    { name: '5º Tempo', period: '11:10 - 11:55' },
-    { name: '6º Tempo', period: '11:55 - 12:40' },
-    { name: '7º Tempo', period: '13:30 - 14:15' }
+const timeSlots = [
+    { name: '1º Tempo', period: '07:30 - 08:20' },
+    { name: '2º Tempo', period: '08:20 - 09:10' },
+    { name: '3º Tempo', period: '09:30 - 10:20' },
+    { name: '4º Tempo', period: '10:20 - 11:10' },
+    { name: '5º Tempo', period: '11:10 - 12:00' },
+    { name: '6º Tempo', period: '12:50 - 13:40' },
+    { name: '7º Tempo', period: '13:40 - 14:30' }
   ];
 
   const getCurrentDay = (): string => {
@@ -116,14 +116,24 @@ const ScheduleDashboard = () => {
         const rowIndex = todayRowIndex + i + 1;
         if (rowIndex < lines.length) {
           const cells = lines[rowIndex].split(',');
-          const content = cells.length > 1 ? cells[1].trim().replace(/"/g, '') : '';
+          
+          // Extract all classes from columns 3 onwards (skip day, tempo, horário columns)
+          const classes: string[] = [];
+          for (let j = 3; j < cells.length; j++) {
+            const classContent = cells[j]?.trim().replace(/"/g, '');
+            if (classContent && classContent !== '') {
+              classes.push(classContent);
+            }
+          }
+          
+          const hasRenato = classes.some(cls => isRenatoClass(cls));
           
           scheduleData.push({
             time: timeSlots[i].name,
             period: timeSlots[i].period,
-            content: content,
-            isRenato: isRenatoClass(content),
-            isEmpty: !content
+            classes: classes,
+            hasRenato: hasRenato,
+            isEmpty: classes.length === 0
           });
         }
       }
@@ -149,12 +159,9 @@ const ScheduleDashboard = () => {
     fetchScheduleData();
   }, []);
 
-  const getSlotStyle = (slot: TimeSlot) => {
-    if (slot.isEmpty) {
-      return "bg-vacant-time text-vacant-time-foreground";
-    }
-    if (slot.isRenato) {
-      return "bg-renato-highlight text-renato-highlight-foreground shadow-[0_0_20px_rgba(0,191,255,0.3)]";
+  const getClassStyle = (className: string) => {
+    if (isRenatoClass(className)) {
+      return "bg-renato-highlight text-renato-highlight-foreground shadow-[0_0_10px_rgba(0,191,255,0.4)]";
     }
     return "bg-other-teacher text-other-teacher-foreground";
   };
@@ -190,22 +197,38 @@ const ScheduleDashboard = () => {
             {/* Schedule Cards */}
             <div className="grid gap-4 md:gap-6">
               {schedule.map((slot, index) => (
-                <Card key={index} className={`tech-card ${getSlotStyle(slot)}`}>
+                <Card key={index} className="tech-card bg-card text-card-foreground">
                   <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4">
+                    <div className="space-y-4">
+                      {/* Time Header */}
+                      <div className="flex items-center gap-3 pb-3 border-b border-border">
                         <div className="flex flex-col">
-                          <span className="font-bold text-lg">{slot.time}</span>
-                          <span className="text-sm opacity-75 flex items-center gap-1">
+                          <span className="font-bold text-lg text-foreground">{slot.time}</span>
+                          <span className="text-sm text-muted-foreground flex items-center gap-1">
                             <Clock className="w-3 h-3" />
                             {slot.period}
                           </span>
                         </div>
                       </div>
-                      <div className="text-right">
-                        <span className={`text-lg font-semibold ${slot.isEmpty ? 'italic opacity-75' : ''}`}>
-                          {slot.isEmpty ? 'Tempo Vago' : slot.content}
-                        </span>
+                      
+                      {/* Classes */}
+                      <div className="min-h-[40px] flex items-center">
+                        {slot.isEmpty ? (
+                          <span className="text-muted-foreground italic text-center w-full">
+                            Tempo Vago
+                          </span>
+                        ) : (
+                          <div className="flex flex-wrap gap-2">
+                            {slot.classes.map((className, classIndex) => (
+                              <span
+                                key={classIndex}
+                                className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${getClassStyle(className)}`}
+                              >
+                                {className}
+                              </span>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     </div>
                   </CardContent>
