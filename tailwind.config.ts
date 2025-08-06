@@ -52,6 +52,19 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				// Schedule-specific colors
+				'renato-highlight': {
+					DEFAULT: 'hsl(var(--renato-highlight))',
+					foreground: 'hsl(var(--renato-highlight-foreground))'
+				},
+				'other-teacher': {
+					DEFAULT: 'hsl(var(--other-teacher))',
+					foreground: 'hsl(var(--other-teacher-foreground))'
+				},
+				'vacant-time': {
+					DEFAULT: 'hsl(var(--vacant-time))',
+					foreground: 'hsl(var(--vacant-time-foreground))'
+				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
