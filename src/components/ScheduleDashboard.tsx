@@ -1,22 +1,23 @@
-import React, { useState, useRef } from 'react';
-import * as XLSX from 'xlsx';
-import { Button } from "@/components/ui/button";
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
-import { Upload, Calendar } from "lucide-react";
+import { Calendar, Clock, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface TimeSlot {
   time: string;
+  period: string;
   content: string;
   isRenato: boolean;
   isEmpty: boolean;
 }
 
+const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQy2FUEgwipIsB-OxQuw42xNPzj39y8TyF4Jp0V9kHpbA_2aYK4DMqCE0jkcK17mVpceNchwhHQlixU/pub?gid=1560992838&single=true&output=csv';
+
 const ScheduleDashboard = () => {
   const [schedule, setSchedule] = useState<TimeSlot[]>([]);
   const [currentDay, setCurrentDay] = useState<string>('');
-  const [isLoading, setIsLoading] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [currentDate, setCurrentDate] = useState<string>('');
+  const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
   const dayNames = {
@@ -30,19 +31,29 @@ const ScheduleDashboard = () => {
   };
 
   const timeSlots = [
-    '1º Tempo',
-    '2º Tempo', 
-    '3º Tempo',
-    '4º Tempo',
-    '5º Tempo',
-    '6º Tempo',
-    '7º Tempo'
+    { name: '1º Tempo', period: '07:30 - 08:15' },
+    { name: '2º Tempo', period: '08:15 - 09:00' },
+    { name: '3º Tempo', period: '09:20 - 10:05' },
+    { name: '4º Tempo', period: '10:05 - 10:50' },
+    { name: '5º Tempo', period: '11:10 - 11:55' },
+    { name: '6º Tempo', period: '11:55 - 12:40' },
+    { name: '7º Tempo', period: '13:30 - 14:15' }
   ];
 
   const getCurrentDay = (): string => {
     const today = new Date();
     const dayIndex = today.getDay() as keyof typeof dayNames;
     return dayNames[dayIndex];
+  };
+
+  const getCurrentDate = (): string => {
+    const today = new Date();
+    return today.toLocaleDateString('pt-BR', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
   };
 
   const isRenatoClass = (content: string): boolean => {
@@ -60,186 +71,176 @@ const ScheduleDashboard = () => {
       .replace(/[^A-Z0-9ª]/g, ''); // Keep only letters, numbers, and 'ª'
   };
 
-  const processSpreadsheet = (file: File) => {
+  const fetchScheduleData = async () => {
     setIsLoading(true);
-    const reader = new FileReader();
-    
-    reader.onload = (e) => {
-      try {
-        const data = new Uint8Array(e.target?.result as ArrayBuffer);
-        const workbook = XLSX.read(data, { type: 'array' });
-        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-        const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
-        
-        const today = getCurrentDay();
-        const normalizedToday = normalizeDayName(today);
-        setCurrentDay(today);
-        
-        // Find the row with today's schedule
-        let todayRowIndex = -1;
-        for (let i = 0; i < jsonData.length; i++) {
-          const row = jsonData[i] as any[];
-          if (row[0] && typeof row[0] === 'string') {
-            const normalizedCell = normalizeDayName(row[0]);
-            if (normalizedCell.includes(normalizedToday.slice(0, 2))) { // Match first 2 chars (2ª, 3ª, etc.)
-              todayRowIndex = i;
-              break;
-            }
+    try {
+      const response = await fetch(CSV_URL);
+      if (!response.ok) {
+        throw new Error('Falha ao carregar dados');
+      }
+      
+      const csvText = await response.text();
+      const lines = csvText.split('\n');
+      
+      const today = getCurrentDay();
+      const normalizedToday = normalizeDayName(today);
+      setCurrentDay(today);
+      setCurrentDate(getCurrentDate());
+      
+      // Find the row with today's schedule
+      let todayRowIndex = -1;
+      for (let i = 0; i < lines.length; i++) {
+        const cells = lines[i].split(',');
+        if (cells[0]) {
+          const normalizedCell = normalizeDayName(cells[0]);
+          if (normalizedCell.includes(normalizedToday.slice(0, 2))) {
+            todayRowIndex = i;
+            break;
           }
         }
-
-        if (todayRowIndex === -1) {
-          toast({
-            title: "Dia não encontrado",
-            description: `Não foi possível encontrar o horário para ${today} na planilha.`,
-            variant: "destructive"
-          });
-          setIsLoading(false);
-          return;
-        }
-
-        // Extract the next 7 rows (7 time slots)
-        const scheduleData: TimeSlot[] = [];
-        for (let i = 0; i < 7; i++) {
-          const rowIndex = todayRowIndex + i + 1;
-          const row = jsonData[rowIndex] as any[];
-          const content = row && row.length > 1 ? String(row[1] || '') : '';
-          
-          scheduleData.push({
-            time: timeSlots[i],
-            content: content.trim(),
-            isRenato: isRenatoClass(content),
-            isEmpty: !content.trim()
-          });
-        }
-
-        setSchedule(scheduleData);
-        toast({
-          title: "Planilha carregada com sucesso!",
-          description: `Horário de ${today} carregado.`
-        });
-        
-      } catch (error) {
-        console.error('Erro ao processar planilha:', error);
-        toast({
-          title: "Erro ao processar planilha",
-          description: "Verifique se o arquivo está no formato correto (.xlsx).",
-          variant: "destructive"
-        });
       }
-      setIsLoading(false);
-    };
 
-    reader.readAsArrayBuffer(file);
-  };
-
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      if (file.type !== 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
+      if (todayRowIndex === -1) {
         toast({
-          title: "Formato inválido",
-          description: "Por favor, selecione um arquivo .xlsx",
+          title: "Dia não encontrado",
+          description: `Não foi possível encontrar o horário para ${today} na planilha.`,
           variant: "destructive"
         });
+        setIsLoading(false);
         return;
       }
-      processSpreadsheet(file);
+
+      // Extract the next 7 rows (7 time slots)
+      const scheduleData: TimeSlot[] = [];
+      for (let i = 0; i < 7; i++) {
+        const rowIndex = todayRowIndex + i + 1;
+        if (rowIndex < lines.length) {
+          const cells = lines[rowIndex].split(',');
+          const content = cells.length > 1 ? cells[1].trim().replace(/"/g, '') : '';
+          
+          scheduleData.push({
+            time: timeSlots[i].name,
+            period: timeSlots[i].period,
+            content: content,
+            isRenato: isRenatoClass(content),
+            isEmpty: !content
+          });
+        }
+      }
+
+      setSchedule(scheduleData);
+      toast({
+        title: "Horário carregado!",
+        description: `Dados de ${today} atualizados automaticamente.`
+      });
+      
+    } catch (error) {
+      console.error('Erro ao carregar horário:', error);
+      toast({
+        title: "Erro ao carregar horário",
+        description: "Não foi possível conectar com a planilha online.",
+        variant: "destructive"
+      });
     }
+    setIsLoading(false);
   };
+
+  useEffect(() => {
+    fetchScheduleData();
+  }, []);
 
   const getSlotStyle = (slot: TimeSlot) => {
     if (slot.isEmpty) {
-      return "bg-vacant-time text-vacant-time-foreground border-vacant-time/20";
+      return "bg-vacant-time text-vacant-time-foreground";
     }
     if (slot.isRenato) {
-      return "bg-renato-highlight text-renato-highlight-foreground border-renato-highlight/30 shadow-lg";
+      return "bg-renato-highlight text-renato-highlight-foreground shadow-[0_0_20px_rgba(0,191,255,0.3)]";
     }
-    return "bg-other-teacher text-other-teacher-foreground border-other-teacher/30";
+    return "bg-other-teacher text-other-teacher-foreground";
   };
 
   return (
-    <div className="min-h-screen bg-background p-4 md:p-6">
-      <div className="max-w-2xl mx-auto space-y-6">
+    <div className="min-h-screen p-4 md:p-6">
+      <div className="max-w-4xl mx-auto space-y-8">
         {/* Header */}
-        <div className="text-center space-y-2">
-          <h1 className="text-3xl md:text-4xl font-bold text-foreground">
-            Meu Horário de Hoje
-          </h1>
-          {currentDay && (
-            <div className="flex items-center justify-center gap-2 text-muted-foreground">
-              <Calendar className="w-4 h-4" />
-              <span className="text-lg">{currentDay}</span>
+        <div className="text-center space-y-4">
+          <div>
+            <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-2">
+              Horário de Hoje
+            </h1>
+            <div className="neon-line w-24 mx-auto"></div>
+          </div>
+          
+          {currentDate && (
+            <div className="flex items-center justify-center gap-3 text-muted-foreground">
+              <Calendar className="w-5 h-5" />
+              <span className="text-lg font-medium capitalize">{currentDate}</span>
             </div>
           )}
         </div>
 
-        {/* Upload Button */}
-        <div className="flex justify-center">
-          <Button
-            onClick={() => fileInputRef.current?.click()}
-            disabled={isLoading}
-            size="lg"
-            className="bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-200 shadow-lg"
-          >
-            <Upload className="w-5 h-5 mr-2" />
-            {isLoading ? 'Processando...' : 'Carregar Planilha (.xlsx)'}
-          </Button>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept=".xlsx"
-            onChange={handleFileUpload}
-            className="hidden"
-          />
-        </div>
-
-        {/* Schedule Display */}
-        {schedule.length > 0 ? (
-          <div className="space-y-3">
-            {schedule.map((slot, index) => (
-              <Card key={index} className={`border transition-all duration-200 ${getSlotStyle(slot)}`}>
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="font-semibold text-sm md:text-base">
-                      {slot.time}
-                    </div>
-                    <div className={`text-sm md:text-base ${slot.isEmpty ? 'italic' : 'font-medium'}`}>
-                      {slot.isEmpty ? 'Tempo Vago' : slot.content}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+        {/* Loading State */}
+        {isLoading ? (
+          <div className="flex flex-col items-center justify-center py-12 space-y-4">
+            <div className="loading-spinner"></div>
+            <p className="text-muted-foreground">Carregando horário de hoje...</p>
           </div>
+        ) : schedule.length > 0 ? (
+          <>
+            {/* Schedule Cards */}
+            <div className="grid gap-4 md:gap-6">
+              {schedule.map((slot, index) => (
+                <Card key={index} className={`tech-card ${getSlotStyle(slot)}`}>
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <div className="flex flex-col">
+                          <span className="font-bold text-lg">{slot.time}</span>
+                          <span className="text-sm opacity-75 flex items-center gap-1">
+                            <Clock className="w-3 h-3" />
+                            {slot.period}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <span className={`text-lg font-semibold ${slot.isEmpty ? 'italic opacity-75' : ''}`}>
+                          {slot.isEmpty ? 'Tempo Vago' : slot.content}
+                        </span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {/* Legend */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-6 border-t border-border">
+              <div className="flex items-center gap-3 p-3 rounded-lg bg-card/50">
+                <div className="w-6 h-6 rounded bg-renato-highlight shadow-[0_0_10px_rgba(0,191,255,0.5)]"></div>
+                <span className="font-medium">Suas Aulas</span>
+              </div>
+              <div className="flex items-center gap-3 p-3 rounded-lg bg-card/50">
+                <div className="w-6 h-6 rounded bg-other-teacher"></div>
+                <span className="font-medium">Outros Professores</span>
+              </div>
+              <div className="flex items-center gap-3 p-3 rounded-lg bg-card/50">
+                <div className="w-6 h-6 rounded bg-vacant-time border border-vacant-time-foreground/20"></div>
+                <span className="font-medium">Tempo Vago</span>
+              </div>
+            </div>
+          </>
         ) : (
-          <Card className="border-dashed border-muted-foreground/20">
-            <CardContent className="p-8 text-center">
-              <div className="text-muted-foreground space-y-2">
-                <Calendar className="w-12 h-12 mx-auto opacity-50" />
-                <p className="text-lg">Por favor, carregue sua planilha de horários</p>
-                <p className="text-sm">Selecione um arquivo .xlsx com seus horários escolares</p>
+          <Card className="tech-card border-dashed">
+            <CardContent className="p-12 text-center">
+              <div className="text-muted-foreground space-y-4">
+                <Calendar className="w-16 h-16 mx-auto opacity-50" />
+                <div>
+                  <p className="text-xl font-medium">Nenhum horário encontrado</p>
+                  <p className="text-sm">Verifique se há dados para hoje na planilha</p>
+                </div>
               </div>
             </CardContent>
           </Card>
-        )}
-
-        {/* Legend */}
-        {schedule.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded bg-renato-highlight"></div>
-              <span className="text-foreground">Suas Aulas</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded bg-other-teacher"></div>
-              <span className="text-foreground">Outros Professores</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded bg-vacant-time border border-vacant-time-foreground/20"></div>
-              <span className="text-foreground">Tempo Vago</span>
-            </div>
-          </div>
         )}
       </div>
     </div>

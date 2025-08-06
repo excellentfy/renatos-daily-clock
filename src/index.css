@@ -2,51 +2,58 @@
 @tailwind components;
 @tailwind utilities;
 
-/* PWA Dashboard Dark Theme Design System - All colors MUST be HSL */
+/* PWA Dashboard Dark Theme Design System - Modern Tech Style */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 @layer base {
   :root {
-    /* Dark theme base colors */
-    --background: 220 13% 7%; /* #121212 - very dark gray */
-    --foreground: 0 0% 88%; /* #e0e0e0 - light gray text */
+    /* Modern tech dark theme with gradients */
+    --background: 220 20% 3%; /* Deep dark blue-black */
+    --foreground: 0 0% 95%; /* Almost white text */
 
-    --card: 220 13% 9%; /* slightly lighter than background */
-    --card-foreground: 0 0% 88%;
+    --card: 220 15% 8%; /* Dark card background */
+    --card-foreground: 0 0% 95%;
 
-    --popover: 220 13% 9%;
-    --popover-foreground: 0 0% 88%;
+    --popover: 220 15% 8%;
+    --popover-foreground: 0 0% 95%;
 
-    /* Renato highlight color - vibrant blue */
-    --primary: 217 91% 60%; /* vibrant blue for RENATO classes */
-    --primary-foreground: 0 0% 100%; /* white text on blue */
+    /* Neon blue for RENATO classes */
+    --primary: 195 100% 50%; /* Neon blue #00BFFF */
+    --primary-foreground: 0 0% 0%; /* Black text on neon blue */
 
-    /* Other teachers - muted graphite */
-    --secondary: 220 9% 25%; /* muted graphite background */
-    --secondary-foreground: 0 0% 70%; /* light gray text (faded) */
+    /* Graphite for other teachers */
+    --secondary: 240 8% 20%; /* Graphite #333344 */
+    --secondary-foreground: 0 0% 63%; /* Light gray #a0a0a0 */
 
     /* Vacant time styling */
-    --muted: 220 13% 15%; /* subtle background for vacant */
-    --muted-foreground: 0 0% 50%; /* more faded text */
+    --muted: 220 15% 12%; /* Subtle background for vacant */
+    --muted-foreground: 0 0% 45%; /* Faded gray text */
 
-    --accent: 217 91% 60%; /* same as primary for consistency */
-    --accent-foreground: 0 0% 100%;
+    --accent: 195 100% 50%; /* Neon blue accent */
+    --accent-foreground: 0 0% 0%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 13% 20%; /* subtle borders */
-    --input: 220 13% 15%; /* input backgrounds */
-    --ring: 217 91% 60%; /* focus rings */
+    --border: 220 15% 15%; /* Subtle tech borders */
+    --input: 220 15% 10%; /* Input backgrounds */
+    --ring: 195 100% 50%; /* Neon blue focus rings */
 
-    --radius: 0.75rem; /* slightly more rounded for modern feel */
+    --radius: 1rem; /* More rounded for modern feel */
+
+    /* Tech gradients */
+    --gradient-bg: linear-gradient(135deg, hsl(220, 20%, 3%) 0%, hsl(220, 25%, 1%) 100%);
+    --gradient-card: linear-gradient(135deg, hsl(220, 15%, 8%) 0%, hsl(220, 15%, 10%) 100%);
+    --gradient-neon: linear-gradient(135deg, hsl(195, 100%, 50%) 0%, hsl(210, 100%, 60%) 100%);
 
     /* Schedule specific colors */
-    --renato-highlight: 217 91% 60%; /* vibrant blue */
-    --renato-highlight-foreground: 0 0% 100%;
-    --other-teacher: 220 9% 25%; /* muted graphite */
-    --other-teacher-foreground: 0 0% 70%;
-    --vacant-time: 220 13% 15%;
-    --vacant-time-foreground: 0 0% 50%;
+    --renato-highlight: 195 100% 50%; /* Neon blue */
+    --renato-highlight-foreground: 0 0% 0%; /* Black on neon */
+    --other-teacher: 240 8% 20%; /* Graphite */
+    --other-teacher-foreground: 0 0% 63%; /* Faded gray */
+    --vacant-time: 220 15% 12%;
+    --vacant-time-foreground: 0 0% 45%;
 
     --sidebar-background: 0 0% 98%;
 
@@ -112,5 +119,41 @@
 
   body {
     @apply bg-background text-foreground;
+    font-family: 'Inter', sans-serif;
+    background: var(--gradient-bg);
+    min-height: 100vh;
+  }
+
+  /* Custom utility classes for tech design */
+  .tech-card {
+    background: var(--gradient-card);
+    border: 1px solid hsl(var(--border));
+    box-shadow: 0 4px 20px rgba(0, 191, 255, 0.1);
+    transition: all 0.3s ease;
+  }
+
+  .tech-card:hover {
+    box-shadow: 0 8px 30px rgba(0, 191, 255, 0.2);
+    transform: translateY(-2px);
+  }
+
+  .neon-line {
+    height: 2px;
+    background: var(--gradient-neon);
+    box-shadow: 0 0 10px rgba(0, 191, 255, 0.5);
+  }
+
+  .loading-spinner {
+    border: 2px solid hsl(var(--muted));
+    border-top: 2px solid hsl(var(--primary));
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
   }
 }
