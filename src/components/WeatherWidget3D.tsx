@@ -29,7 +29,7 @@ export const WeatherWidget3D: React.FC = () => {
   const fetchWeatherData = async (coords?: { lat: number; lon: number }) => {
     const apiKey = import.meta.env.VITE_HG_WEATHER_KEY || '627daf6b';
     const endpoint = coords
-      ? `https://api.hgbrasil.com/weather?format=json-cors&key=${apiKey}&lat=${coords.lat}&lon=${coords.lon}&user_ip=remote`
+      ? `https://api.hgbrasil.com/weather?format=json-cors&key=${apiKey}&lat=${coords.lat}&lon=${coords.lon}`
       : `https://api.hgbrasil.com/weather?format=json-cors&key=${apiKey}&user_ip=remote`;
 
     try {
