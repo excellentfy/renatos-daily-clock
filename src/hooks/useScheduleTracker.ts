@@ -3,12 +3,26 @@ import { TIME_SLOTS, BREAK_MORNING, BREAK_LUNCH, WEEK_DAYS, TimeSlotConfig } fro
 
 export type DayStatus = 'BEFORE_SCHOOL' | 'IN_CLASS' | 'MORNING_BREAK' | 'LUNCH_BREAK' | 'AFTER_SCHOOL' | 'WEEKEND';
 
+// Helper to get current Date in America/Sao_Paulo timezone
+export function getBrasiliaDate(): Date {
+  const now = new Date();
+  // Using Intl format to ensure accurate Brasília time on Cloudflare Pages or any client worldwide
+  try {
+    const brasiliaString = now.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' });
+    return new Date(brasiliaString);
+  } catch {
+    return now;
+  }
+}
+
 export function useScheduleTracker() {
-  const [now, setNow] = useState<Date>(new Date());
+  const [now, setNow] = useState<Date>(() => getBrasiliaDate());
   const [isSimulating, setIsSimulating] = useState<boolean>(false);
   const [simulatedMinutes, setSimulatedMinutes] = useState<number>(8 * 60 + 30); // Default simulation: 08:30
+  
   const [selectedDayName, setSelectedDayName] = useState<string>(() => {
-    const day = new Date().getDay();
+    const bDate = getBrasiliaDate();
+    const day = bDate.getDay();
     const dayMap: Record<number, string> = {
       1: '2ª FEIRA',
       2: '3ª FEIRA',
@@ -19,10 +33,10 @@ export function useScheduleTracker() {
     return dayMap[day] || '2ª FEIRA';
   });
 
-  // Tick clock every second
+  // Tick clock every second with accurate Brasília time
   useEffect(() => {
     const timer = setInterval(() => {
-      setNow(new Date());
+      setNow(getBrasiliaDate());
     }, 1000);
     return () => clearInterval(timer);
   }, []);
@@ -60,7 +74,7 @@ export function useScheduleTracker() {
         nextSlot: null,
         breakType: null,
         label: 'Aulas encerradas hoje',
-        sublabel: 'Bom descanso! Até amanhã.',
+        sublabel: 'Horário letivo concluído.',
         progress: 100,
         secondsRemaining: 0,
       };
