@@ -499,12 +499,12 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
                         <div
                           key={cName}
                           onClick={() => handleCellClick(asg, period.slot)}
-                          className={`p-2 rounded-xl transition-all duration-150 cursor-pointer min-h-[56px] flex flex-col justify-between select-none ${
+                          className={`p-2.5 rounded-2xl transition-all duration-150 cursor-pointer min-h-[64px] flex flex-col justify-between select-none ${
                             isDimmed ? 'opacity-15 grayscale-[80%]' : ''
                           } ${
                             isHighlighted
-                              ? 'bg-gradient-to-b from-cyan-50 via-white to-cyan-50/80 border-2 border-cyan-500 border-b-4 border-b-cyan-600 shadow-[0_4px_10px_rgba(2,132,199,0.25),inset_0_1px_0_rgba(255,255,255,1)] -translate-y-0.5'
-                              : 'bg-gradient-to-b from-white to-slate-50 border border-slate-200/90 border-b-2 border-b-slate-300 shadow-[0_2px_4px_rgba(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.9)] hover:-translate-y-0.5 active:translate-y-0.5 active:border-b active:shadow-inner'
+                              ? 'bg-gradient-to-b from-cyan-50 via-white to-cyan-50/80 border-2 border-cyan-500 border-b-[5px] border-b-cyan-600 shadow-[0_6px_12px_rgba(2,132,199,0.3),inset_0_1px_0_rgba(255,255,255,1)] -translate-y-0.5'
+                              : 'bg-gradient-to-b from-white to-slate-50 border border-slate-200/90 border-b-[4px] border-b-slate-300 shadow-[0_4px_8px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.9)] hover:-translate-y-0.5 active:translate-y-[1px] active:border-b-[2px] active:shadow-inner'
                           }`}
                         >
                           <div className="flex justify-between items-center w-full">
@@ -517,10 +517,10 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
                               </span>
                             )}
                           </div>
-                          <span className={`text-[11px] leading-tight font-black mt-1 break-words flex items-center gap-1 ${colorClass}`}>
+                          <span className={`text-[13.5px] leading-tight font-black mt-1.5 break-words flex items-center gap-1.5 uppercase tracking-wide drop-shadow-[0_1px_1.5px_rgba(0,0,0,0.22)] ${colorClass}`}>
                             {asg.teacher}
                             {hasNote(asg.teacher, period.slot.id, cName) && (
-                              <FileText className="w-2.5 h-2.5 text-amber-500 animate-pulse shrink-0" />
+                              <FileText className="w-3 h-3 text-amber-500 animate-pulse shrink-0 drop-shadow-none" />
                             )}
                           </span>
 
