@@ -26,16 +26,14 @@ export const WeatherWidget3D: React.FC = () => {
   });
   const iconRef = useRef<HTMLDivElement>(null);
 
-  const fetchWeatherData = async (coords?: { lat: number; lon: number }) => {
+  const fetchWeatherData = async () => {
     const apiKey = import.meta.env.VITE_HG_WEATHER_KEY || '627daf6b';
     
-    // Coordenadas padrão da escola GET Venezuela em Campo Grande, RJ
-    const defaultLat = -22.8936;
-    const defaultLon = -43.5511;
+    // Coordenadas fixas da escola GET Venezuela em Campo Grande, RJ
+    const lat = -22.8936;
+    const lon = -43.5511;
 
-    const endpoint = coords
-      ? `https://api.hgbrasil.com/weather?format=json-cors&key=${apiKey}&lat=${coords.lat}&lon=${coords.lon}`
-      : `https://api.hgbrasil.com/weather?format=json-cors&key=${apiKey}&lat=${defaultLat}&lon=${defaultLon}`;
+    const endpoint = `https://api.hgbrasil.com/weather?format=json-cors&key=${apiKey}&lat=${lat}&lon=${lon}`;
 
     try {
       const response = await fetch(endpoint);
@@ -47,12 +45,12 @@ export const WeatherWidget3D: React.FC = () => {
         setWeather({
           temp: r.temp || 26,
           description: r.description || 'Tempo Bom',
-          city: r.city || 'Rio de Janeiro, RJ',
+          city: 'Campo Grande, RJ', // Força o nome da localidade do relógio letivo
           humidity: r.humidity || 60,
           windSpeed: r.wind_speedy || '12 km/h',
           conditionSlug: r.condition_slug || 'clear_day',
           currently: r.currently || 'dia',
-          isExactLocation: !!coords,
+          isExactLocation: true,
         });
       }
     } catch (err) {
@@ -73,23 +71,8 @@ export const WeatherWidget3D: React.FC = () => {
       });
     }
 
-    // 1. Initial quick fetch via IP
+    // Busca o clima oficial fixo de Campo Grande, RJ
     fetchWeatherData();
-
-    // 2. Request browser precise geolocation for 100% location accuracy if permitted
-    if ('geolocation' in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          fetchWeatherData({ lat: latitude, lon: longitude });
-        },
-        (error) => {
-          // Geolocation was denied or unavailable - keep IP based weather
-          console.info('Geolocalização não concedida pelo usuário. Mantendo clima por IP:', error.message);
-        },
-        { timeout: 8000, maximumAge: 600000 }
-      );
-    }
 
     const interval = setInterval(() => fetchWeatherData(), 10 * 60 * 1000); // 10 minutes refresh
     return () => clearInterval(interval);
