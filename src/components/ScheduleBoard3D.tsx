@@ -45,65 +45,18 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
   onSelectTeacherByName,
   onOpenClassNotes,
 }) => {
-  const boardRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [is3DEnabled, setIs3DEnabled] = useState(true);
-
-  // 3D Parallax Tilt Effect with GSAP
-  useEffect(() => {
-    const container = containerRef.current;
-    const board = boardRef.current;
-    if (!container || !board || !is3DEnabled) return;
-
-    const handleMouseMove = (e: MouseEvent) => {
-      const rect = container.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      const centerX = rect.width / 2;
-      const centerY = rect.height / 2;
-
-      // Subtle 3D tilt angles
-      const rotateX = ((y - centerY) / centerY) * -4;
-      const rotateY = ((x - centerX) / centerX) * 4;
-
-      gsap.to(board, {
-        rotateX: rotateX,
-        rotateY: rotateY,
-        duration: 0.45,
-        ease: 'power2.out',
-        transformPerspective: 1200,
-        transformOrigin: 'center center',
-      });
-    };
-
-    const handleMouseLeave = () => {
-      gsap.to(board, {
-        rotateX: 0,
-        rotateY: 0,
-        duration: 0.7,
-        ease: 'elastic.out(1, 0.4)',
-      });
-    };
-
-    container.addEventListener('mousemove', handleMouseMove);
-    container.addEventListener('mouseleave', handleMouseLeave);
-
-    return () => {
-      container.removeEventListener('mousemove', handleMouseMove);
-      container.removeEventListener('mouseleave', handleMouseLeave);
-    };
-  }, [is3DEnabled]);
 
   // Highlight animation when teacher selection changes
   useEffect(() => {
-    if (!boardRef.current) return;
+    if (!containerRef.current) return;
     const ctx = gsap.context(() => {
       gsap.fromTo(
         '.highlighted-cell',
         { scale: 0.94, opacity: 0.7 },
         { scale: 1.03, opacity: 1, duration: 0.3, ease: 'back.out(2)' }
       );
-    }, boardRef);
+    }, containerRef);
 
     return () => ctx.revert();
   }, [selectedTeacher, selectedSubject]);
@@ -122,14 +75,9 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
 
   return (
     <div ref={containerRef} className="w-full relative select-none">
-      {/* 3D Board Frame - Clean Light Theme with Tactile Neumorphic / Skeuomorphic Details */}
+      {/* Console Frame - Tactile Fixed 3D Raised Panel (Neumorphic / Skeuomorphic Button Box) */}
       <div
-        ref={boardRef}
-        style={{
-          transformStyle: 'preserve-3d',
-          transition: 'transform 0.1s ease-out',
-        }}
-        className="w-full rounded-2xl border-2 border-slate-300 bg-white shadow-[0_16px_40px_rgba(0,0,0,0.09),0_2px_6px_rgba(0,0,0,0.04)] overflow-hidden backdrop-blur-xl"
+        className="w-full rounded-3xl border-2 border-slate-300 border-b-[8px] border-b-slate-400 bg-white shadow-[0_24px_50px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,1)] overflow-hidden"
       >
         {/* Main Table Header: Official HORÁRIO 2026 Banner */}
         <div className="bg-gradient-to-r from-[#0f172a] via-[#1e293b] to-[#0f172a] border-b-2 border-slate-300 px-4 md:px-6 py-2.5 md:py-3 flex items-center justify-between shadow-sm">
@@ -141,17 +89,6 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
           </div>
 
           <div className="flex items-center gap-2 md:gap-3">
-            <button
-              onClick={() => setIs3DEnabled(!is3DEnabled)}
-              className={`text-[10px] md:text-xs font-mono font-semibold px-2.5 py-1 rounded-xl border border-b-2 border-slate-700 transition-all active:translate-y-0.5 ${
-                is3DEnabled
-                  ? 'bg-cyan-500/20 text-cyan-300 border-cyan-400/50 shadow-sm'
-                  : 'bg-slate-800 text-slate-400'
-              }`}
-            >
-              {is3DEnabled ? '🎮 3D Tilt' : '2D Fixo'}
-            </button>
-
             <span className="text-xs md:text-sm font-black px-3.5 md:px-4 py-1 rounded-xl bg-[#00bfff] text-slate-950 shadow-sm uppercase tracking-wider border-b-2 border-[#0284c7]">
               {currentDaySchedule.dayName}
             </span>
