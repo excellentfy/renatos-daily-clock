@@ -158,8 +158,8 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
           </div>
         </div>
 
-        {/* The Official Schedule Table Matrix - Tactile Button Grid */}
-        <div className="w-full overflow-x-auto">
+        {/* The Official Schedule Table Matrix - Tactile Button Grid (Desktop/Tablet) */}
+        <div className="hidden md:block w-full overflow-x-auto">
           <table className="w-full border-collapse text-center table-fixed bg-white">
             {/* Header row with TEMPOS, HORÁRIO, Classes */}
             <thead>
@@ -206,7 +206,7 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
                           ☕ RECREIO
                         </td>
                         <td className={`py-1.5 px-1 font-mono text-[9px] md:text-[10px] font-bold border-r border-slate-200 ${
-                          activeStatus === 'MORNING_BREAK' ? 'bg-amber-200 text-slate-950 font-black' : 'bg-amber-50 text-amber-950'
+                          activeStatus === 'MORNING_BREAK' ? 'bg-amber-200 text-slate-950 font-black' : 'bg-amber-50 text-amber-900'
                         }`}>
                           09:10 às 09:30
                         </td>
@@ -247,7 +247,7 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
                           🍽️ ALMOÇO
                         </td>
                         <td className={`py-1.5 px-1 font-mono text-[9px] md:text-[10px] font-bold border-r border-slate-200 ${
-                          activeStatus === 'LUNCH_BREAK' ? 'bg-amber-200 text-slate-950 font-black' : 'bg-sky-50 text-sky-950'
+                          activeStatus === 'LUNCH_BREAK' ? 'bg-amber-200 text-slate-950 font-black' : 'bg-sky-50 text-sky-900'
                         }`}>
                           12:00 às 12:50
                         </td>
@@ -385,6 +385,159 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
               })}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile Responsive Version - Elegant Card Grid (block md:hidden) */}
+        <div className="block md:hidden p-3.5 space-y-4 bg-slate-50/50">
+          {currentDaySchedule.periods.map(period => {
+            const isCurrentActive = activePeriodId === period.slot.id;
+
+            return (
+              <React.Fragment key={period.slot.id}>
+                {/* RECREIO (entre 2º e 3º tempo) */}
+                {period.slot.id === 3 && (
+                  <div
+                    className={`p-3 rounded-2xl border transition-all ${
+                      activeStatus === 'MORNING_BREAK'
+                        ? 'bg-amber-100 border-amber-400 ring-2 ring-amber-500 shadow-md'
+                        : 'bg-amber-50/70 border-amber-200'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="px-2 py-0.5 rounded-lg bg-amber-200 text-amber-950 font-black text-[10px]">☕ RECREIO</span>
+                        <span className="text-xs font-bold text-slate-700">09:10 às 09:30</span>
+                      </div>
+                      {activeStatus === 'MORNING_BREAK' && (
+                        <span className="px-2 py-0.5 rounded-full bg-amber-400 text-slate-950 font-mono text-[9px] font-black animate-pulse shadow-sm">
+                          Restam {formattedTimeRemaining}
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-[11px] font-bold text-amber-950 mt-1.5 uppercase tracking-wide">
+                      Intervalo / Recreio (20 min)
+                    </div>
+                  </div>
+                )}
+
+                {/* ALMOÇO (entre 5º e 6º tempo) */}
+                {period.slot.id === 6 && (
+                  <div
+                    className={`p-3 rounded-2xl border transition-all ${
+                      activeStatus === 'LUNCH_BREAK'
+                        ? 'bg-sky-100 border-sky-400 ring-2 ring-sky-500 shadow-md'
+                        : 'bg-sky-50/70 border-sky-200'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="px-2 py-0.5 rounded-lg bg-sky-200 text-sky-950 font-black text-[10px]">🍽️ ALMOÇO</span>
+                        <span className="text-xs font-bold text-slate-700">12:00 às 12:50</span>
+                      </div>
+                      {activeStatus === 'LUNCH_BREAK' && (
+                        <span className="px-2 py-0.5 rounded-full bg-amber-400 text-slate-950 font-mono text-[9px] font-black animate-pulse shadow-sm">
+                          Restam {formattedTimeRemaining}
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-[11px] font-bold text-sky-950 mt-1.5 uppercase tracking-wide">
+                      Intervalo de Almoço (50 min)
+                    </div>
+                  </div>
+                )}
+
+                {/* Card do tempo letivo */}
+                <div
+                  className={`rounded-2xl border overflow-hidden transition-all shadow-sm ${
+                    isCurrentActive
+                      ? 'border-amber-400 ring-2 ring-amber-500 bg-amber-50/20'
+                      : 'border-slate-200 bg-white'
+                  }`}
+                >
+                  {/* Header do Card (Tempo e Horário) */}
+                  <div
+                    className={`px-3 py-1.5 flex items-center justify-between border-b ${
+                      isCurrentActive
+                        ? 'bg-amber-400 text-slate-950 font-black'
+                        : 'bg-slate-100 text-slate-700 font-bold'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      {isCurrentActive && <span className="w-1.5 h-1.5 rounded-full bg-slate-950 animate-ping" />}
+                      <span className="text-xs font-mono uppercase tracking-wider">{period.slot.id}º Tempo</span>
+                    </div>
+                    <span className="text-xs font-mono font-bold">{period.slot.startTime} - {period.slot.endTime}</span>
+                  </div>
+
+                  {/* Grid de turmas (2 colunas para garantir excelente espaço lateral de leitura sem truncation) */}
+                  <div className="grid grid-cols-2 gap-2 p-2 bg-slate-50/30">
+                    {currentDaySchedule.classNames.map(cName => {
+                      const asg = period.classes[cName];
+                      const isEmpty = !asg || asg.isVacant;
+
+                      if (isEmpty) {
+                        return (
+                          <div
+                            key={cName}
+                            className={`p-2 rounded-xl border border-dashed border-slate-200 flex flex-col justify-center items-center text-slate-400 min-h-[56px] ${
+                              selectedTeacher ? 'opacity-20' : 'opacity-40'
+                            }`}
+                          >
+                            <span className="text-[9px] font-bold text-slate-400">Turma {cName}</span>
+                            <span className="text-[10px] font-mono mt-0.5">
+                              {asg?.raw === 'VAGO' ? <span className="text-rose-500 font-bold">VAGO</span> : '-'}
+                            </span>
+                          </div>
+                        );
+                      }
+
+                      // Teacher matching
+                      const isTargetTeacher = selectedTeacher
+                        ? asg.teacher.toUpperCase() === selectedTeacher.name.toUpperCase()
+                        : false;
+
+                      const isTargetSubject =
+                        selectedSubject === 'TODAS' ||
+                        asg.subject.toUpperCase() === selectedSubject.toUpperCase();
+
+                      const isHighlighted = isTargetTeacher && isTargetSubject;
+                      const isDimmed = selectedTeacher !== null && !isHighlighted;
+
+                      const colorClass = TEACHER_COLORS_LIGHT[asg.teacher.toUpperCase()] || 'text-slate-800 font-black';
+
+                      return (
+                        <div
+                          key={cName}
+                          onClick={() => handleCellClick(asg, period.slot)}
+                          className={`p-2 rounded-xl transition-all duration-150 cursor-pointer min-h-[56px] flex flex-col justify-between select-none ${
+                            isDimmed ? 'opacity-15 grayscale-[80%]' : ''
+                          } ${
+                            isHighlighted
+                              ? 'bg-gradient-to-b from-cyan-50 via-white to-cyan-50/80 border-2 border-cyan-500 border-b-4 border-b-cyan-600 shadow-[0_4px_10px_rgba(2,132,199,0.25),inset_0_1px_0_rgba(255,255,255,1)] -translate-y-0.5'
+                              : 'bg-gradient-to-b from-white to-slate-50 border border-slate-200/90 border-b-2 border-b-slate-300 shadow-[0_2px_4px_rgba(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.9)] hover:-translate-y-0.5 active:translate-y-0.5 active:border-b active:shadow-inner'
+                          }`}
+                        >
+                          <div className="flex justify-between items-center w-full">
+                            <span className="text-[9px] font-bold text-slate-500 bg-slate-100 border border-slate-200 px-1 py-0.2 rounded">
+                              T. {cName}
+                            </span>
+                            {!asg.isMainSubject && (
+                              <span className="text-[8px] font-mono font-black text-amber-900 bg-amber-100 border border-amber-200 px-1 py-0.2 rounded scale-90 origin-right">
+                                {asg.subject}
+                              </span>
+                            )}
+                          </div>
+                          <span className={`text-[11px] leading-tight font-black mt-1 break-words ${colorClass}`}>
+                            {asg.teacher}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </React.Fragment>
+            );
+          })}
         </div>
 
         {/* Bottom Instructions Bar */}
