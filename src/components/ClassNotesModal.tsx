@@ -59,13 +59,19 @@ export const ClassNotesModal: React.FC<ClassNotesModalProps> = ({
     };
     localStorage.setItem(storageKey, JSON.stringify(payload));
     setIsSaved(true);
-    setTimeout(() => setIsSaved(false), 2500);
+    window.dispatchEvent(new Event('notes-updated'));
+    setTimeout(() => {
+      setIsSaved(false);
+      onClose();
+    }, 300);
   };
 
   const handleClear = () => {
     if (!storageKey) return;
     localStorage.removeItem(storageKey);
     setNoteContent('');
+    window.dispatchEvent(new Event('notes-updated'));
+    onClose();
   };
 
   const quickTags = ['Conteúdo Ministrado', 'Prova / Avaliação', 'Trabalho / Tarefa', 'Recado / Observação'];

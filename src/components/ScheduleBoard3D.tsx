@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { DaySchedule, TeacherMeta, TimeSlotConfig, TeacherAssignment } from '@/data/scheduleData';
-import { Sparkles, User, Coffee, Utensils } from 'lucide-react';
+import { Sparkles, User, Coffee, Utensils, FileText } from 'lucide-react';
 import gsap from 'gsap';
 
 interface ScheduleBoard3DProps {
@@ -46,6 +46,31 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
   onOpenClassNotes,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [notesVersion, setNotesVersion] = useState(0);
+
+  useEffect(() => {
+    const handleNotesUpdate = () => {
+      setNotesVersion(prev => prev + 1);
+    };
+    window.addEventListener('notes-updated', handleNotesUpdate);
+    window.addEventListener('storage', handleNotesUpdate);
+    return () => {
+      window.removeEventListener('notes-updated', handleNotesUpdate);
+      window.removeEventListener('storage', handleNotesUpdate);
+    };
+  }, []);
+
+  const hasNote = (teacherName: string, slotId: number, className: string) => {
+    const key = `get_class_notes_${teacherName}_${currentDaySchedule.dayName}_slot${slotId}_${className}`;
+    const val = localStorage.getItem(key);
+    if (!val) return false;
+    try {
+      const parsed = JSON.parse(val);
+      return !!parsed.content;
+    } catch {
+      return !!val;
+    }
+  };
 
   // Highlight animation when teacher selection changes
   useEffect(() => {
@@ -302,8 +327,11 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
                                   : 'bg-gradient-to-b from-white to-slate-50 border border-slate-200/90 border-b-2 border-b-slate-300/80 shadow-[0_2px_4px_rgba(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.9)] hover:-translate-y-0.5 hover:shadow-[0_4px_8px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,1)] hover:border-slate-300 active:translate-y-0.5 active:border-b active:shadow-inner'
                               }`}
                             >
-                              <span className={`text-[10px] md:text-[11px] leading-tight tracking-tight truncate w-full ${colorClass}`}>
+                              <span className={`text-[10px] md:text-[11px] leading-tight tracking-tight truncate w-full flex items-center justify-center gap-1 ${colorClass}`}>
                                 {asg.teacher}
+                                {hasNote(asg.teacher, period.slot.id, cName) && (
+                                  <FileText className="w-2.5 h-2.5 text-amber-500 animate-pulse shrink-0" />
+                                )}
                               </span>
 
                               {/* Suffix tag (PIC, EO, PV, CL, etc.) */}
@@ -464,8 +492,11 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
                               </span>
                             )}
                           </div>
-                          <span className={`text-[11px] leading-tight font-black mt-1 break-words ${colorClass}`}>
+                          <span className={`text-[11px] leading-tight font-black mt-1 break-words flex items-center gap-1 ${colorClass}`}>
                             {asg.teacher}
+                            {hasNote(asg.teacher, period.slot.id, cName) && (
+                              <FileText className="w-2.5 h-2.5 text-amber-500 animate-pulse shrink-0" />
+                            )}
                           </span>
                         </div>
                       );
