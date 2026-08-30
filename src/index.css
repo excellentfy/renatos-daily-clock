@@ -4,37 +4,37 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Modern Tech Dark Theme Design System with GSAP & Three.js Aesthetics */
+/* Clean Premium Light Theme Design System */
 
 @layer base {
   :root {
-    --background: 224 71% 4%; /* Deep space black #020617 */
-    --foreground: 210 40% 98%;
+    --background: 210 40% 98%; /* Clean light slate/white #f8fafc */
+    --foreground: 222 47% 11%; /* High-contrast dark text #0f172a */
 
-    --card: 222 47% 11%;
-    --card-foreground: 210 40% 98%;
+    --card: 0 0% 100%; /* Pure white card background */
+    --card-foreground: 222 47% 11%;
 
-    --popover: 222 47% 11%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
 
-    --primary: 188 100% 50%; /* Electric Neon Cyan #00F0FF */
-    --primary-foreground: 224 71% 4%;
+    --primary: 199 89% 48%; /* GET Cyan #0284c7 */
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 217 33% 17%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%; /* Light secondary #f1f5f9 */
+    --secondary-foreground: 222 47% 11%;
 
-    --muted: 217 33% 17%;
-    --muted-foreground: 215 20% 65%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%; /* Slate 500 */
 
-    --accent: 262 83% 58%; /* Cyberpunk Violet #8B5CF6 */
-    --accent-foreground: 210 40% 98%;
+    --accent: 45 93% 47%; /* GET Gold #eab308 */
+    --accent-foreground: 222 47% 11%;
 
     --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 217 33% 20%;
-    --input: 217 33% 17%;
-    --ring: 188 100% 50%;
+    --border: 214 32% 91%; /* Clean light border #e2e8f0 */
+    --input: 214 32% 91%;
+    --ring: 199 89% 48%;
 
     --radius: 1rem;
   }
@@ -48,11 +48,11 @@
   body {
     @apply bg-background text-foreground;
     font-family: 'Plus Jakarta Sans', sans-serif;
+    background-color: #f8fafc;
     background-image: 
-      radial-gradient(at 0% 0%, rgba(6, 182, 212, 0.08) 0px, transparent 50%),
-      radial-gradient(at 100% 0%, rgba(139, 92, 246, 0.08) 0px, transparent 50%),
-      radial-gradient(at 50% 100%, rgba(16, 185, 129, 0.05) 0px, transparent 50%);
-    background-attachment: fixed;
+      radial-gradient(at 0% 0%, rgba(2, 132, 199, 0.04) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, rgba(234, 179, 8, 0.04) 0px, transparent 50%),
+      radial-gradient(at 50% 100%, rgba(244, 63, 94, 0.03) 0px, transparent 50%);
     min-height: 100vh;
   }
 
@@ -67,12 +67,12 @@
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: rgba(15, 23, 42, 0.6);
+  background: #f1f5f9;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(100, 116, 139, 0.5);
+  background: #cbd5e1;
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(6, 182, 212, 0.8);
+  background: #94a3b8;
 }
