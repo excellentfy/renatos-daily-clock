@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Sun, Cloud, CloudRain, CloudLightning, Wind, Droplets, Thermometer } from 'lucide-react';
+import { Sun, Cloud, CloudRain, CloudLightning, MapPin } from 'lucide-react';
 import gsap from 'gsap';
 
 interface WeatherData {
@@ -10,6 +10,7 @@ interface WeatherData {
   windSpeed: string;
   conditionSlug: string;
   currently: string;
+  isExactLocation?: boolean;
 }
 
 export const WeatherWidget3D: React.FC = () => {
@@ -21,9 +22,38 @@ export const WeatherWidget3D: React.FC = () => {
     windSpeed: '14 km/h',
     conditionSlug: 'clear_day',
     currently: 'dia',
+    isExactLocation: false,
   });
-  const [isLoading, setIsLoading] = useState<boolean>(true);
   const iconRef = useRef<HTMLDivElement>(null);
+
+  const fetchWeatherData = async (coords?: { lat: number; lon: number }) => {
+    const apiKey = import.meta.env.VITE_HG_WEATHER_KEY || '627daf6b';
+    const endpoint = coords
+      ? `https://api.hgbrasil.com/weather?format=json-cors&key=${apiKey}&lat=${coords.lat}&lon=${coords.lon}&user_ip=remote`
+      : `https://api.hgbrasil.com/weather?format=json-cors&key=${apiKey}&user_ip=remote`;
+
+    try {
+      const response = await fetch(endpoint);
+      if (!response.ok) throw new Error('Falha ao buscar clima');
+      const data = await response.json();
+      
+      if (data.results) {
+        const r = data.results;
+        setWeather({
+          temp: r.temp || 26,
+          description: r.description || 'Tempo Bom',
+          city: r.city || 'Rio de Janeiro, RJ',
+          humidity: r.humidity || 60,
+          windSpeed: r.wind_speedy || '12 km/h',
+          conditionSlug: r.condition_slug || 'clear_day',
+          currently: r.currently || 'dia',
+          isExactLocation: !!coords,
+        });
+      }
+    } catch (err) {
+      console.warn('Usando dados de clima de contingência:', err);
+    }
+  };
 
   useEffect(() => {
     // 3D continuous floating animation for weather icon
@@ -38,38 +68,25 @@ export const WeatherWidget3D: React.FC = () => {
       });
     }
 
-    // Fetch HG Brasil weather using environment variable
-    const apiKey = import.meta.env.VITE_HG_WEATHER_KEY || '627daf6b';
+    // 1. Initial quick fetch via IP
+    fetchWeatherData();
 
-    const fetchWeather = async () => {
-      try {
-        const response = await fetch(
-          `https://api.hgbrasil.com/weather?format=json-cors&key=${apiKey}&user_ip=remote`
-        );
-        if (!response.ok) throw new Error('Falha ao buscar clima');
-        const data = await response.json();
-        
-        if (data.results) {
-          const r = data.results;
-          setWeather({
-            temp: r.temp || 26,
-            description: r.description || 'Tempo Bom',
-            city: r.city || 'Rio de Janeiro, RJ',
-            humidity: r.humidity || 60,
-            windSpeed: r.wind_speedy || '12 km/h',
-            conditionSlug: r.condition_slug || 'clear_day',
-            currently: r.currently || 'dia',
-          });
-        }
-      } catch (err) {
-        console.warn('Usando dados de clima padrão (offline/fallback):', err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+    // 2. Request browser precise geolocation for 100% location accuracy if permitted
+    if ('geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          fetchWeatherData({ lat: latitude, lon: longitude });
+        },
+        (error) => {
+          // Geolocation was denied or unavailable - keep IP based weather
+          console.info('Geolocalização não concedida pelo usuário. Mantendo clima por IP:', error.message);
+        },
+        { timeout: 8000, maximumAge: 600000 }
+      );
+    }
 
-    fetchWeather();
-    const interval = setInterval(fetchWeather, 10 * 60 * 1000); // 10 minutes refresh
+    const interval = setInterval(() => fetchWeatherData(), 10 * 60 * 1000); // 10 minutes refresh
     return () => clearInterval(interval);
   }, []);
 
@@ -90,6 +107,7 @@ export const WeatherWidget3D: React.FC = () => {
   return (
     <div
       style={{ perspective: '600px' }}
+      title={weather.isExactLocation ? 'Localização exata via GPS do dispositivo' : 'Localização estimada via rede/IP'}
       className="flex items-center gap-2.5 px-3.5 py-1.5 rounded-2xl bg-white border border-slate-200 shadow-sm hover:shadow-md transition-shadow select-none"
     >
       {/* 3D Animated Weather Icon */}
@@ -110,7 +128,8 @@ export const WeatherWidget3D: React.FC = () => {
             {weather.description}
           </span>
         </div>
-        <span className="text-[9px] font-semibold text-slate-400 truncate max-w-[120px]">
+        <span className="text-[9px] font-semibold text-slate-400 truncate max-w-[120px] flex items-center gap-0.5">
+          {weather.isExactLocation && <MapPin className="w-2.5 h-2.5 text-cyan-600 inline" />}
           {weather.city.split(',')[0]} • {weather.humidity}% umid.
         </span>
       </div>
