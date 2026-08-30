@@ -28,9 +28,14 @@ export const WeatherWidget3D: React.FC = () => {
 
   const fetchWeatherData = async (coords?: { lat: number; lon: number }) => {
     const apiKey = import.meta.env.VITE_HG_WEATHER_KEY || '627daf6b';
+    
+    // Coordenadas padrão da escola GET Venezuela em Campo Grande, RJ
+    const defaultLat = -22.8936;
+    const defaultLon = -43.5511;
+
     const endpoint = coords
       ? `https://api.hgbrasil.com/weather?format=json-cors&key=${apiKey}&lat=${coords.lat}&lon=${coords.lon}`
-      : `https://api.hgbrasil.com/weather?format=json-cors&key=${apiKey}&user_ip=remote`;
+      : `https://api.hgbrasil.com/weather?format=json-cors&key=${apiKey}&lat=${defaultLat}&lon=${defaultLon}`;
 
     try {
       const response = await fetch(endpoint);
