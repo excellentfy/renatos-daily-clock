@@ -46,21 +46,21 @@ export const GetLogo3D: React.FC = () => {
         <div
           ref={letterGRef}
           style={{ transformStyle: 'preserve-3d' }}
-          className="w-10 h-10 md:w-11 md:h-11 rounded-2xl bg-[#0f143a] border border-[#2b3577] shadow-[0_8px_16px_rgba(0,0,0,0.6),0_0_12px_rgba(244,63,94,0.3)] flex items-center justify-center relative cursor-pointer hover:scale-110 transition-transform"
+          className="w-10 h-10 md:w-11 md:h-11 rounded-2xl bg-[#0f143a] border border-[#2b3577] shadow-[0_6px_14px_rgba(0,0,0,0.25),0_0_10px_rgba(244,63,94,0.2)] flex items-center justify-center relative cursor-pointer hover:scale-110 transition-transform"
         >
-          <span className="text-2xl md:text-3xl font-black text-[#ff2e5f] font-sans drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+          <span className="text-2xl md:text-3xl font-black text-[#ff2e5f] font-sans drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">
             G
           </span>
-          <div className="absolute inset-0 rounded-2xl bg-gradient-to-tr from-transparent via-white/10 to-transparent pointer-events-none" />
+          <div className="absolute inset-0 rounded-2xl bg-gradient-to-tr from-transparent via-white/15 to-transparent pointer-events-none" />
         </div>
 
         {/* 'E' Box */}
         <div
           ref={letterERef}
           style={{ transformStyle: 'preserve-3d' }}
-          className="w-10 h-10 md:w-11 md:h-11 rounded-2xl bg-[#facc15] border border-[#fde047] shadow-[0_8px_16px_rgba(0,0,0,0.6),0_0_15px_rgba(250,204,21,0.4)] flex items-center justify-center relative cursor-pointer hover:scale-110 transition-transform"
+          className="w-10 h-10 md:w-11 md:h-11 rounded-2xl bg-[#facc15] border border-[#fde047] shadow-[0_6px_14px_rgba(0,0,0,0.2),0_0_12px_rgba(250,204,21,0.35)] flex items-center justify-center relative cursor-pointer hover:scale-110 transition-transform"
         >
-          <span className="text-2xl md:text-3xl font-black text-[#ff2e5f] font-sans drop-shadow-[0_2px_4px_rgba(0,0,0,0.4)]">
+          <span className="text-2xl md:text-3xl font-black text-[#ff2e5f] font-sans drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">
             E
           </span>
           <div className="absolute inset-0 rounded-2xl bg-gradient-to-tr from-transparent via-white/20 to-transparent pointer-events-none" />
@@ -70,21 +70,21 @@ export const GetLogo3D: React.FC = () => {
         <div
           ref={letterTRef}
           style={{ transformStyle: 'preserve-3d' }}
-          className="w-10 h-10 md:w-11 md:h-11 rounded-2xl bg-[#00bfff] border border-[#38bdf8] shadow-[0_8px_16px_rgba(0,0,0,0.6),0_0_15px_rgba(0,191,255,0.4)] flex items-center justify-center relative cursor-pointer hover:scale-110 transition-transform"
+          className="w-10 h-10 md:w-11 md:h-11 rounded-2xl bg-[#00bfff] border border-[#38bdf8] shadow-[0_6px_14px_rgba(0,0,0,0.2),0_0_12px_rgba(0,191,255,0.35)] flex items-center justify-center relative cursor-pointer hover:scale-110 transition-transform"
         >
-          <span className="text-2xl md:text-3xl font-black text-[#ff2e5f] font-sans drop-shadow-[0_2px_4px_rgba(0,0,0,0.4)]">
+          <span className="text-2xl md:text-3xl font-black text-[#ff2e5f] font-sans drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">
             T
           </span>
           <div className="absolute inset-0 rounded-2xl bg-gradient-to-tr from-transparent via-white/20 to-transparent pointer-events-none" />
         </div>
       </div>
 
-      {/* School Typography */}
+      {/* School Typography with High Contrast & Soft Text Shadow for Light Theme */}
       <div className="flex flex-col justify-center leading-none">
-        <span className="text-[9px] md:text-[10px] font-bold tracking-wider text-slate-300 uppercase font-sans">
+        <span className="text-[9px] md:text-[10px] font-extrabold tracking-wider text-slate-600 uppercase font-sans">
           GINÁSIO EDUCACIONAL TECNOLÓGICO
         </span>
-        <span className="text-lg md:text-xl font-black tracking-tight text-white uppercase font-sans drop-shadow-md">
+        <span className="text-xl md:text-2xl font-black tracking-tight text-slate-950 uppercase font-sans drop-shadow-sm mt-0.5">
           VENEZUELA
         </span>
       </div>
