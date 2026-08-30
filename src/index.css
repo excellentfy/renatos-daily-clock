@@ -5,6 +5,7 @@
 @tailwind utilities;
 
 /* Clean Premium Light Theme Design System */
+/* Trigger Pages Build: Force dependency reload without bun.lockb */
 
 @layer base {
   :root {
