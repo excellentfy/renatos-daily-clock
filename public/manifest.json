@@ -1,26 +1,28 @@
 {
-  "name": "Horário Diário - Dashboard PWA",
-  "short_name": "Horário",
-  "description": "Dashboard para visualização de horários escolares diários",
+  "name": "Horários 2026 - GET Venezuela",
+  "short_name": "Horários GET",
+  "description": "Controle e Quadro de Horários Escolares 2026 do Ginásio Educacional Tecnológico Venezuela",
   "start_url": "/",
+  "id": "/",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#121212",
-  "theme_color": "#3b82f6",
-  "orientation": "portrait-primary",
+  "background_color": "#f8fafc",
+  "theme_color": "#00bfff",
+  "orientation": "any",
   "icons": [
     {
-      "src": "favicon.ico",
+      "src": "/favicon.ico",
       "sizes": "64x64 32x32 24x24 16x16",
       "type": "image/x-icon"
     },
     {
-      "src": "icon-192.png",
+      "src": "/icon-192.png",
       "type": "image/png",
       "sizes": "192x192",
       "purpose": "any maskable"
     },
     {
-      "src": "icon-512.png", 
+      "src": "/icon-512.png",
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "any maskable"
