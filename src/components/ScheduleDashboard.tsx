@@ -195,7 +195,7 @@ export const ScheduleDashboard: React.FC = () => {
               </div>
 
               {teacherDayPeriods.filter(p => p.hasTeacher).length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div className="flex flex-col gap-2">
                   {teacherDayPeriods
                     .filter(p => p.hasTeacher)
                     .map(p => (
