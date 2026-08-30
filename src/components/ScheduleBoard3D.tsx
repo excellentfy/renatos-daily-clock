@@ -387,25 +387,15 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
           </table>
         </div>
 
-        {/* Bottom Legend & Instructions */}
-        <div className="bg-slate-50 px-4 md:px-6 py-2.5 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2 text-[11px]">
-          <div className="flex flex-wrap items-center gap-3 text-slate-600">
-            <span className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#0284c7] shadow-sm" />
-              <strong className="text-slate-900">Nome simples</strong> = Disciplina Principal
+        {/* Bottom Instructions Bar */}
+        <div className="bg-slate-50 px-4 md:px-6 py-2.5 border-t border-slate-200 flex items-center justify-start text-[11px]">
+          <div className="text-cyan-800 font-sans font-bold flex items-center gap-1.5">
+            <span className="text-sm">💡</span>
+            <span>
+              {selectedTeacher
+                ? `Clique em qualquer aula destacada de ${selectedTeacher.name} para abrir as anotações da turma.`
+                : 'Clique em qualquer professor no quadro para focar na grade de horários dele.'}
             </span>
-            <span className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded bg-amber-400 text-slate-900 font-bold text-[8px] flex items-center justify-center">
-                EO
-              </span>
-              <strong className="text-slate-900">Sigla final</strong> = Disciplina Específica (PIC, EO, PV, CL)
-            </span>
-          </div>
-
-          <div className="text-cyan-700 font-mono font-bold text-[11px]">
-            {selectedTeacher
-              ? `💡 Clique em qualquer botão de aula de ${selectedTeacher.name} para abrir anotações`
-              : '💡 Clique em qualquer botão de professor para focar suas aulas'}
           </div>
         </div>
       </div>
