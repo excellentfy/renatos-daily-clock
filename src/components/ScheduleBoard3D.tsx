@@ -176,33 +176,33 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
                         key="break-morning"
                         className={`transition-all duration-200 ${
                           activeStatus === 'MORNING_BREAK'
-                            ? 'bg-amber-100 ring-2 ring-amber-500 shadow-md font-bold'
-                            : 'bg-amber-50/80 border-y border-amber-200 hover:bg-amber-100/60'
+                            ? 'bg-rose-100 ring-2 ring-rose-500 shadow-md font-bold'
+                            : 'bg-rose-50/80 border-y border-rose-200 hover:bg-rose-100/60'
                         }`}
                       >
                         <td className={`py-1.5 px-1 font-mono text-[9px] md:text-[10px] font-black border-r border-slate-200 ${
-                          activeStatus === 'MORNING_BREAK' ? 'bg-amber-400 text-slate-950 font-black' : 'bg-amber-100 text-amber-900'
+                          activeStatus === 'MORNING_BREAK' ? 'bg-rose-400 text-slate-950 font-black' : 'bg-rose-100 text-rose-900'
                         }`}>
                           ☕ RECREIO
                         </td>
                         <td className={`py-1.5 px-1 font-mono text-[9px] md:text-[10px] font-bold border-r border-slate-200 ${
-                          activeStatus === 'MORNING_BREAK' ? 'bg-amber-200 text-slate-950 font-black' : 'bg-amber-50 text-amber-900'
+                          activeStatus === 'MORNING_BREAK' ? 'bg-rose-200 text-slate-950 font-black' : 'bg-rose-50 text-rose-900'
                         }`}>
                           09:10 às 09:30
                         </td>
                         <td
                           colSpan={currentDaySchedule.classNames.length}
-                          className="py-1.5 px-3 text-left font-bold text-amber-950 font-sans tracking-wide text-xs"
+                          className="py-1.5 px-3 text-left font-bold text-rose-950 font-sans tracking-wide text-xs"
                         >
                           <div className="flex items-center justify-between">
                             <span className="flex items-center gap-1.5 text-slate-800">
-                              <Coffee className="w-3.5 h-3.5 text-amber-600" />
-                              <span className="uppercase text-[10px] md:text-[11px] font-black tracking-wider text-amber-950">
+                              <Coffee className="w-3.5 h-3.5 text-rose-600" />
+                              <span className="uppercase text-[10px] md:text-[11px] font-black tracking-wider text-rose-950">
                                 Intervalo / Recreio (20 min)
                               </span>
                             </span>
                             {activeStatus === 'MORNING_BREAK' && (
-                              <span className="px-2 py-0.5 rounded-full bg-amber-400 text-slate-950 font-mono text-[9px] md:text-[10px] font-black animate-pulse shadow-sm">
+                              <span className="px-2 py-0.5 rounded-full bg-rose-400 text-slate-950 font-mono text-[9px] md:text-[10px] font-black animate-pulse shadow-sm">
                                 EM ANDAMENTO • Restam {formattedTimeRemaining}
                               </span>
                             )}
@@ -217,33 +217,33 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
                         key="break-lunch"
                         className={`transition-all duration-200 ${
                           activeStatus === 'LUNCH_BREAK'
-                            ? 'bg-amber-100 ring-2 ring-amber-500 shadow-md font-bold'
-                            : 'bg-sky-50/80 border-y border-sky-200 hover:bg-sky-100/60'
+                            ? 'bg-rose-100 ring-2 ring-rose-500 shadow-md font-bold'
+                            : 'bg-rose-50/80 border-y border-rose-200 hover:bg-rose-100/60'
                         }`}
                       >
                         <td className={`py-1.5 px-1 font-mono text-[9px] md:text-[10px] font-black border-r border-slate-200 ${
-                          activeStatus === 'LUNCH_BREAK' ? 'bg-amber-400 text-slate-950 font-black' : 'bg-sky-100 text-sky-900'
+                          activeStatus === 'LUNCH_BREAK' ? 'bg-rose-400 text-slate-950 font-black' : 'bg-rose-100 text-rose-900'
                         }`}>
                           🍽️ ALMOÇO
                         </td>
                         <td className={`py-1.5 px-1 font-mono text-[9px] md:text-[10px] font-bold border-r border-slate-200 ${
-                          activeStatus === 'LUNCH_BREAK' ? 'bg-amber-200 text-slate-950 font-black' : 'bg-sky-50 text-sky-900'
+                          activeStatus === 'LUNCH_BREAK' ? 'bg-rose-200 text-slate-950 font-black' : 'bg-rose-50 text-rose-900'
                         }`}>
                           12:00 às 12:50
                         </td>
                         <td
                           colSpan={currentDaySchedule.classNames.length}
-                          className="py-1.5 px-3 text-left font-bold text-sky-950 font-sans tracking-wide text-xs"
+                          className="py-1.5 px-3 text-left font-bold text-rose-950 font-sans tracking-wide text-xs"
                         >
                           <div className="flex items-center justify-between">
                             <span className="flex items-center gap-1.5 text-slate-800">
-                              <Utensils className="w-3.5 h-3.5 text-sky-600" />
-                              <span className="uppercase text-[10px] md:text-[11px] font-black tracking-wider text-sky-950">
+                              <Utensils className="w-3.5 h-3.5 text-rose-600" />
+                              <span className="uppercase text-[10px] md:text-[11px] font-black tracking-wider text-rose-950">
                                 Intervalo de Almoço (50 min)
                               </span>
                             </span>
                             {activeStatus === 'LUNCH_BREAK' && (
-                              <span className="px-2 py-0.5 rounded-full bg-amber-400 text-slate-950 font-mono text-[9px] md:text-[10px] font-black animate-pulse shadow-sm">
+                              <span className="px-2 py-0.5 rounded-full bg-rose-400 text-slate-950 font-mono text-[9px] md:text-[10px] font-black animate-pulse shadow-sm">
                                 EM ANDAMENTO • Restam {formattedTimeRemaining}
                               </span>
                             )}
@@ -389,22 +389,22 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
                   <div
                     className={`p-3 rounded-2xl border transition-all ${
                       activeStatus === 'MORNING_BREAK'
-                        ? 'bg-amber-100 border-amber-400 ring-2 ring-amber-500 shadow-md'
-                        : 'bg-amber-50/70 border-amber-200'
+                        ? 'bg-rose-100 border-rose-400 ring-2 ring-rose-500 shadow-md'
+                        : 'bg-rose-50/70 border-rose-200'
                     }`}
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <span className="px-2 py-0.5 rounded-lg bg-amber-200 text-amber-950 font-black text-[10px]">☕ RECREIO</span>
+                        <span className="px-2 py-0.5 rounded-lg bg-rose-200 text-rose-950 font-black text-[10px]">☕ RECREIO</span>
                         <span className="text-xs font-bold text-slate-700">09:10 às 09:30</span>
                       </div>
                       {activeStatus === 'MORNING_BREAK' && (
-                        <span className="px-2 py-0.5 rounded-full bg-amber-400 text-slate-950 font-mono text-[9px] font-black animate-pulse shadow-sm">
+                        <span className="px-2 py-0.5 rounded-full bg-rose-400 text-slate-950 font-mono text-[9px] font-black animate-pulse shadow-sm">
                           Restam {formattedTimeRemaining}
                         </span>
                       )}
                     </div>
-                    <div className="text-[11px] font-bold text-amber-950 mt-1.5 uppercase tracking-wide">
+                    <div className="text-[11px] font-bold text-rose-950 mt-1.5 uppercase tracking-wide">
                       Intervalo / Recreio (20 min)
                     </div>
                   </div>
@@ -415,22 +415,22 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
                   <div
                     className={`p-3 rounded-2xl border transition-all ${
                       activeStatus === 'LUNCH_BREAK'
-                        ? 'bg-sky-100 border-sky-400 ring-2 ring-sky-500 shadow-md'
-                        : 'bg-sky-50/70 border-sky-200'
+                        ? 'bg-rose-100 border-rose-400 ring-2 ring-rose-500 shadow-md'
+                        : 'bg-rose-50/70 border-rose-200'
                     }`}
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <span className="px-2 py-0.5 rounded-lg bg-sky-200 text-sky-950 font-black text-[10px]">🍽️ ALMOÇO</span>
+                        <span className="px-2 py-0.5 rounded-lg bg-rose-200 text-rose-950 font-black text-[10px]">🍽️ ALMOÇO</span>
                         <span className="text-xs font-bold text-slate-700">12:00 às 12:50</span>
                       </div>
                       {activeStatus === 'LUNCH_BREAK' && (
-                        <span className="px-2 py-0.5 rounded-full bg-amber-400 text-slate-950 font-mono text-[9px] font-black animate-pulse shadow-sm">
+                        <span className="px-2 py-0.5 rounded-full bg-rose-400 text-slate-950 font-mono text-[9px] font-black animate-pulse shadow-sm">
                           Restam {formattedTimeRemaining}
                         </span>
                       )}
                     </div>
-                    <div className="text-[11px] font-bold text-sky-950 mt-1.5 uppercase tracking-wide">
+                    <div className="text-[11px] font-bold text-rose-950 mt-1.5 uppercase tracking-wide">
                       Intervalo de Almoço (50 min)
                     </div>
                   </div>
