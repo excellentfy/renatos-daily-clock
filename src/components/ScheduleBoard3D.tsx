@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { DaySchedule, TeacherMeta, TimeSlotConfig, TeacherAssignment, BREAK_MORNING, BREAK_LUNCH } from '@/data/scheduleData';
+import { DaySchedule, TeacherMeta, TimeSlotConfig, TeacherAssignment } from '@/data/scheduleData';
 import { Sparkles, User, Coffee, Utensils } from 'lucide-react';
 import gsap from 'gsap';
 
@@ -63,8 +63,8 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
       const centerY = rect.height / 2;
 
       // Subtle 3D tilt angles
-      const rotateX = ((y - centerY) / centerY) * -4.5;
-      const rotateY = ((x - centerX) / centerX) * 4.5;
+      const rotateX = ((y - centerY) / centerY) * -4;
+      const rotateY = ((x - centerX) / centerX) * 4;
 
       gsap.to(board, {
         rotateX: rotateX,
@@ -100,8 +100,8 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
     const ctx = gsap.context(() => {
       gsap.fromTo(
         '.highlighted-cell',
-        { scale: 0.92, opacity: 0.6 },
-        { scale: 1.04, opacity: 1, duration: 0.3, ease: 'back.out(2)' }
+        { scale: 0.94, opacity: 0.7 },
+        { scale: 1.03, opacity: 1, duration: 0.3, ease: 'back.out(2)' }
       );
     }, boardRef);
 
@@ -122,14 +122,14 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
 
   return (
     <div ref={containerRef} className="w-full relative select-none">
-      {/* 3D Board Frame - Clean Light Theme */}
+      {/* 3D Board Frame - Clean Light Theme with Tactile Neumorphic / Skeuomorphic Details */}
       <div
         ref={boardRef}
         style={{
           transformStyle: 'preserve-3d',
           transition: 'transform 0.1s ease-out',
         }}
-        className="w-full rounded-2xl border-2 border-slate-300 bg-white shadow-[0_12px_40px_rgba(0,0,0,0.08)] overflow-hidden backdrop-blur-xl"
+        className="w-full rounded-2xl border-2 border-slate-300 bg-white shadow-[0_16px_40px_rgba(0,0,0,0.09),0_2px_6px_rgba(0,0,0,0.04)] overflow-hidden backdrop-blur-xl"
       >
         {/* Main Table Header: Official HORÁRIO 2026 Banner */}
         <div className="bg-gradient-to-r from-[#0f172a] via-[#1e293b] to-[#0f172a] border-b-2 border-slate-300 px-4 md:px-6 py-2.5 md:py-3 flex items-center justify-between shadow-sm">
@@ -143,22 +143,22 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
           <div className="flex items-center gap-2 md:gap-3">
             <button
               onClick={() => setIs3DEnabled(!is3DEnabled)}
-              className={`text-[10px] md:text-xs font-mono font-semibold px-2.5 py-1 rounded-lg border transition-all ${
+              className={`text-[10px] md:text-xs font-mono font-semibold px-2.5 py-1 rounded-xl border border-b-2 border-slate-700 transition-all active:translate-y-0.5 ${
                 is3DEnabled
                   ? 'bg-cyan-500/20 text-cyan-300 border-cyan-400/50 shadow-sm'
-                  : 'bg-slate-800 text-slate-400 border-slate-700'
+                  : 'bg-slate-800 text-slate-400'
               }`}
             >
               {is3DEnabled ? '🎮 3D Tilt' : '2D Fixo'}
             </button>
 
-            <span className="text-xs md:text-sm font-black px-3.5 md:px-4 py-1 rounded-xl bg-[#00bfff] text-slate-950 shadow-sm uppercase tracking-wider">
+            <span className="text-xs md:text-sm font-black px-3.5 md:px-4 py-1 rounded-xl bg-[#00bfff] text-slate-950 shadow-sm uppercase tracking-wider border-b-2 border-[#0284c7]">
               {currentDaySchedule.dayName}
             </span>
           </div>
         </div>
 
-        {/* The Official Schedule Table Matrix - Full Width Light Theme */}
+        {/* The Official Schedule Table Matrix - Tactile Button Grid */}
         <div className="w-full overflow-x-auto">
           <table className="w-full border-collapse text-center table-fixed bg-white">
             {/* Header row with TEMPOS, HORÁRIO, Classes */}
@@ -175,7 +175,7 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
                     key={cName}
                     className="py-2 px-0.5 md:px-1 font-black bg-[#0f172a] text-white border-r border-slate-700 tracking-tight last:border-r-0"
                   >
-                    <span className="inline-block w-full py-0.5 rounded bg-slate-800 border border-slate-600 text-[10px] md:text-[11px] font-bold shadow-sm text-slate-100">
+                    <span className="inline-block w-full py-0.5 rounded-lg bg-slate-800 border border-slate-600 border-b-2 border-b-slate-950 text-[10px] md:text-[11px] font-bold shadow-[0_2px_4px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.15)] text-slate-100">
                       {cName}
                     </span>
                   </th>
@@ -206,7 +206,7 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
                           ☕ RECREIO
                         </td>
                         <td className={`py-1.5 px-1 font-mono text-[9px] md:text-[10px] font-bold border-r border-slate-200 ${
-                          activeStatus === 'MORNING_BREAK' ? 'bg-amber-200 text-slate-950 font-black' : 'bg-amber-50 text-amber-900'
+                          activeStatus === 'MORNING_BREAK' ? 'bg-amber-200 text-slate-950 font-black' : 'bg-amber-50 text-amber-950'
                         }`}>
                           09:10 às 09:30
                         </td>
@@ -247,7 +247,7 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
                           🍽️ ALMOÇO
                         </td>
                         <td className={`py-1.5 px-1 font-mono text-[9px] md:text-[10px] font-bold border-r border-slate-200 ${
-                          activeStatus === 'LUNCH_BREAK' ? 'bg-amber-200 text-slate-950 font-black' : 'bg-sky-50 text-sky-900'
+                          activeStatus === 'LUNCH_BREAK' ? 'bg-amber-200 text-slate-950 font-black' : 'bg-sky-50 text-sky-950'
                         }`}>
                           12:00 às 12:50
                         </td>
@@ -281,9 +281,9 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
                           : 'hover:bg-slate-50'
                       }`}
                     >
-                      {/* TEMPOS Column */}
+                      {/* TEMPOS Column - Tactile Key Style */}
                       <td
-                        className={`py-2 md:py-2.5 px-1 font-mono font-bold border-r border-slate-200 whitespace-nowrap ${
+                        className={`py-2 px-1 font-mono font-bold border-r border-slate-200 whitespace-nowrap ${
                           isCurrentActive
                             ? 'bg-amber-400 text-slate-950 font-black shadow-sm'
                             : 'bg-slate-100 text-slate-800'
@@ -297,7 +297,7 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
 
                       {/* HORÁRIO Column */}
                       <td
-                        className={`py-2 md:py-2.5 px-1 font-mono text-[10px] md:text-xs font-bold border-r border-slate-200 whitespace-nowrap ${
+                        className={`py-2 px-1 font-mono text-[10px] md:text-xs font-bold border-r border-slate-200 whitespace-nowrap ${
                           isCurrentActive
                             ? 'bg-amber-200 text-slate-950 font-black'
                             : 'bg-slate-50 text-slate-600'
@@ -306,7 +306,7 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
                         {period.slot.startTime}-{period.slot.endTime}
                       </td>
 
-                      {/* Class Cells */}
+                      {/* Class Cells - Tactile 3D Push-Button / Neumorphic Relief */}
                       {currentDaySchedule.classNames.map(cName => {
                         const asg = period.classes[cName];
                         const isEmpty = !asg || asg.isVacant;
@@ -315,12 +315,14 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
                           return (
                             <td
                               key={cName}
-                              className={`py-1 px-0.5 border-r border-slate-200 last:border-r-0 text-slate-400 font-mono text-[9px] md:text-[10px] ${
+                              className={`py-1.5 px-0.5 border-r border-slate-200 last:border-r-0 text-slate-400 font-mono text-[9px] md:text-[10px] ${
                                 selectedTeacher ? 'opacity-20' : 'opacity-40'
                               }`}
                             >
                               {asg?.raw === 'VAGO' ? (
-                                <span className="text-rose-500 font-bold">VAGO</span>
+                                <span className="inline-block px-1.5 py-0.5 rounded bg-rose-50 text-rose-600 font-bold border border-rose-200 border-b-2 border-b-rose-300 text-[9px]">
+                                  VAGO
+                                </span>
                               ) : (
                                 '-'
                               )}
@@ -351,28 +353,25 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
                                 ? `Clique para abrir anotações da Turma ${asg.className}`
                                 : `Clique para focar no professor ${asg.teacher}`
                             }
-                            className={`py-1 px-0.5 md:px-1 border-r border-slate-200 last:border-r-0 transition-all duration-150 cursor-pointer overflow-hidden ${
-                              isHighlighted
-                                ? 'highlighted-cell bg-cyan-100/90 shadow-[0_0_15px_rgba(2,132,199,0.35)] z-20 relative'
-                                : isDimmed
-                                ? 'opacity-15 grayscale-[80%]'
-                                : 'hover:bg-slate-100'
+                            className={`p-1 border-r border-slate-200 last:border-r-0 transition-all duration-150 cursor-pointer overflow-hidden ${
+                              isDimmed ? 'opacity-15 grayscale-[80%]' : ''
                             }`}
                           >
+                            {/* Tactile Skeuomorphic / Neumorphic 3D Push Button */}
                             <div
-                              className={`py-1 px-0.5 rounded-lg flex flex-col items-center justify-center transition-all ${
+                              className={`py-1 px-0.5 rounded-xl flex flex-col items-center justify-center transition-all duration-150 select-none ${
                                 isHighlighted
-                                  ? 'border-2 border-cyan-500 bg-white shadow-md scale-105'
-                                  : 'border border-transparent'
+                                  ? 'highlighted-cell bg-gradient-to-b from-cyan-50 via-white to-cyan-50/80 border-2 border-cyan-500 border-b-4 border-b-cyan-600 shadow-[0_4px_12px_rgba(2,132,199,0.35),inset_0_1px_0_rgba(255,255,255,1)] -translate-y-0.5 active:translate-y-0.5 active:border-b-2'
+                                  : 'bg-gradient-to-b from-white to-slate-50 border border-slate-200/90 border-b-2 border-b-slate-300/80 shadow-[0_2px_4px_rgba(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.9)] hover:-translate-y-0.5 hover:shadow-[0_4px_8px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,1)] hover:border-slate-300 active:translate-y-0.5 active:border-b active:shadow-inner'
                               }`}
                             >
-                              <span className={`text-[10px] md:text-[11px] leading-none tracking-tight truncate w-full ${colorClass}`}>
+                              <span className={`text-[10px] md:text-[11px] leading-tight tracking-tight truncate w-full ${colorClass}`}>
                                 {asg.teacher}
                               </span>
 
                               {/* Suffix tag (PIC, EO, PV, CL, etc.) */}
                               {!asg.isMainSubject && (
-                                <span className="text-[8px] md:text-[9px] font-mono font-black text-amber-700 mt-0.5 bg-amber-100 px-1 py-0.2 rounded border border-amber-300 leading-none">
+                                <span className="text-[8px] md:text-[9px] font-mono font-black text-amber-900 mt-0.5 bg-amber-100 px-1 py-0.2 rounded border border-amber-300 border-b-2 border-b-amber-400 leading-none shadow-xs">
                                   {asg.subject}
                                 </span>
                               )}
@@ -405,8 +404,8 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
 
           <div className="text-cyan-700 font-mono font-bold text-[11px]">
             {selectedTeacher
-              ? `💡 Clique em qualquer aula destacada de ${selectedTeacher.name} para abrir anotações`
-              : '💡 Clique em qualquer professor para focar suas aulas'}
+              ? `💡 Clique em qualquer botão de aula de ${selectedTeacher.name} para abrir anotações`
+              : '💡 Clique em qualquer botão de professor para focar suas aulas'}
           </div>
         </div>
       </div>
