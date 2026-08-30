@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { DaySchedule, TeacherMeta, TimeSlotConfig, TeacherAssignment } from '@/data/scheduleData';
-import { Sparkles, User } from 'lucide-react';
+import { DaySchedule, TeacherMeta, TimeSlotConfig, TeacherAssignment, BREAK_MORNING, BREAK_LUNCH } from '@/data/scheduleData';
+import { Sparkles, User, Coffee, Utensils } from 'lucide-react';
 import gsap from 'gsap';
 
 interface ScheduleBoard3DProps {
@@ -183,120 +183,205 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
               </tr>
             </thead>
 
-            {/* Body rows 1º to 7º */}
+            {/* Body rows with 1º to 7º + RECREIO (09:10 - 09:30) + ALMOÇO (12:00 - 12:50) */}
             <tbody className="divide-y divide-slate-200 font-sans text-xs">
               {currentDaySchedule.periods.map(period => {
                 const isCurrentActive = activePeriodId === period.slot.id;
 
                 return (
-                  <tr
-                    key={period.slot.id}
-                    className={`transition-all duration-200 ${
-                      isCurrentActive
-                        ? 'bg-amber-100/90 ring-2 ring-amber-500 shadow-md'
-                        : 'hover:bg-slate-50'
-                    }`}
-                  >
-                    {/* TEMPOS Column */}
-                    <td
-                      className={`py-2 md:py-2.5 px-1 font-mono font-bold border-r border-slate-200 whitespace-nowrap ${
-                        isCurrentActive
-                          ? 'bg-amber-400 text-slate-950 font-black shadow-sm'
-                          : 'bg-slate-100 text-slate-800'
-                      }`}
-                    >
-                      <div className="flex items-center justify-center gap-0.5 md:gap-1">
-                        {isCurrentActive && <span className="w-1.5 h-1.5 rounded-full bg-slate-950 animate-ping" />}
-                        <span className="text-xs md:text-sm font-black">{period.slot.id}º</span>
-                      </div>
-                    </td>
-
-                    {/* HORÁRIO Column */}
-                    <td
-                      className={`py-2 md:py-2.5 px-1 font-mono text-[10px] md:text-xs font-bold border-r border-slate-200 whitespace-nowrap ${
-                        isCurrentActive
-                          ? 'bg-amber-200 text-slate-950 font-black'
-                          : 'bg-slate-50 text-slate-600'
-                      }`}
-                    >
-                      {period.slot.startTime}-{period.slot.endTime}
-                    </td>
-
-                    {/* Class Cells */}
-                    {currentDaySchedule.classNames.map(cName => {
-                      const asg = period.classes[cName];
-                      const isEmpty = !asg || asg.isVacant;
-
-                      if (isEmpty) {
-                        return (
-                          <td
-                            key={cName}
-                            className={`py-1 px-0.5 border-r border-slate-200 last:border-r-0 text-slate-400 font-mono text-[9px] md:text-[10px] ${
-                              selectedTeacher ? 'opacity-20' : 'opacity-40'
-                            }`}
-                          >
-                            {asg?.raw === 'VAGO' ? (
-                              <span className="text-rose-500 font-bold">VAGO</span>
-                            ) : (
-                              '-'
-                            )}
-                          </td>
-                        );
-                      }
-
-                      // Teacher matching
-                      const isTargetTeacher = selectedTeacher
-                        ? asg.teacher.toUpperCase() === selectedTeacher.name.toUpperCase()
-                        : false;
-
-                      const isTargetSubject =
-                        selectedSubject === 'TODAS' ||
-                        asg.subject.toUpperCase() === selectedSubject.toUpperCase();
-
-                      const isHighlighted = isTargetTeacher && isTargetSubject;
-                      const isDimmed = selectedTeacher !== null && !isHighlighted;
-
-                      const colorClass = TEACHER_COLORS_LIGHT[asg.teacher.toUpperCase()] || 'text-slate-800 font-black';
-
-                      return (
+                  <React.Fragment key={period.slot.id}>
+                    {/* Linha do RECREIO / INTERVALO (entre 2º e 3º tempo) */}
+                    {period.slot.id === 3 && (
+                      <tr
+                        key="break-morning"
+                        className={`transition-all duration-200 ${
+                          activeStatus === 'MORNING_BREAK'
+                            ? 'bg-amber-100 ring-2 ring-amber-500 shadow-md font-bold'
+                            : 'bg-amber-50/80 border-y border-amber-200 hover:bg-amber-100/60'
+                        }`}
+                      >
+                        <td className={`py-1.5 px-1 font-mono text-[9px] md:text-[10px] font-black border-r border-slate-200 ${
+                          activeStatus === 'MORNING_BREAK' ? 'bg-amber-400 text-slate-950 font-black' : 'bg-amber-100 text-amber-900'
+                        }`}>
+                          ☕ RECREIO
+                        </td>
+                        <td className={`py-1.5 px-1 font-mono text-[9px] md:text-[10px] font-bold border-r border-slate-200 ${
+                          activeStatus === 'MORNING_BREAK' ? 'bg-amber-200 text-slate-950 font-black' : 'bg-amber-50 text-amber-900'
+                        }`}>
+                          09:10 às 09:30
+                        </td>
                         <td
-                          key={cName}
-                          onClick={() => handleCellClick(asg, period.slot)}
-                          title={
-                            selectedTeacher && isHighlighted
-                              ? `Clique para abrir anotações da Turma ${asg.className}`
-                              : `Clique para focar no professor ${asg.teacher}`
-                          }
-                          className={`py-1 px-0.5 md:px-1 border-r border-slate-200 last:border-r-0 transition-all duration-150 cursor-pointer overflow-hidden ${
-                            isHighlighted
-                              ? 'highlighted-cell bg-cyan-100/90 shadow-[0_0_15px_rgba(2,132,199,0.35)] z-20 relative'
-                              : isDimmed
-                              ? 'opacity-15 grayscale-[80%]'
-                              : 'hover:bg-slate-100'
-                          }`}
+                          colSpan={currentDaySchedule.classNames.length}
+                          className="py-1.5 px-3 text-left font-bold text-amber-950 font-sans tracking-wide text-xs"
                         >
-                          <div
-                            className={`py-1 px-0.5 rounded-lg flex flex-col items-center justify-center transition-all ${
-                              isHighlighted
-                                ? 'border-2 border-cyan-500 bg-white shadow-md scale-105'
-                                : 'border border-transparent'
-                            }`}
-                          >
-                            <span className={`text-[10px] md:text-[11px] leading-none tracking-tight truncate w-full ${colorClass}`}>
-                              {asg.teacher}
+                          <div className="flex items-center justify-between">
+                            <span className="flex items-center gap-1.5 text-slate-800">
+                              <Coffee className="w-3.5 h-3.5 text-amber-600" />
+                              <span className="uppercase text-[10px] md:text-[11px] font-black tracking-wider text-amber-950">
+                                Intervalo / Recreio (20 min)
+                              </span>
                             </span>
-
-                            {/* Suffix tag (PIC, EO, PV, CL, etc.) */}
-                            {!asg.isMainSubject && (
-                              <span className="text-[8px] md:text-[9px] font-mono font-black text-amber-700 mt-0.5 bg-amber-100 px-1 py-0.2 rounded border border-amber-300 leading-none">
-                                {asg.subject}
+                            {activeStatus === 'MORNING_BREAK' && (
+                              <span className="px-2 py-0.5 rounded-full bg-amber-400 text-slate-950 font-mono text-[9px] md:text-[10px] font-black animate-pulse shadow-sm">
+                                EM ANDAMENTO • Restam {formattedTimeRemaining}
                               </span>
                             )}
                           </div>
                         </td>
-                      );
-                    })}
-                  </tr>
+                      </tr>
+                    )}
+
+                    {/* Linha do ALMOÇO (entre 5º e 6º tempo) */}
+                    {period.slot.id === 6 && (
+                      <tr
+                        key="break-lunch"
+                        className={`transition-all duration-200 ${
+                          activeStatus === 'LUNCH_BREAK'
+                            ? 'bg-amber-100 ring-2 ring-amber-500 shadow-md font-bold'
+                            : 'bg-sky-50/80 border-y border-sky-200 hover:bg-sky-100/60'
+                        }`}
+                      >
+                        <td className={`py-1.5 px-1 font-mono text-[9px] md:text-[10px] font-black border-r border-slate-200 ${
+                          activeStatus === 'LUNCH_BREAK' ? 'bg-amber-400 text-slate-950 font-black' : 'bg-sky-100 text-sky-900'
+                        }`}>
+                          🍽️ ALMOÇO
+                        </td>
+                        <td className={`py-1.5 px-1 font-mono text-[9px] md:text-[10px] font-bold border-r border-slate-200 ${
+                          activeStatus === 'LUNCH_BREAK' ? 'bg-amber-200 text-slate-950 font-black' : 'bg-sky-50 text-sky-900'
+                        }`}>
+                          12:00 às 12:50
+                        </td>
+                        <td
+                          colSpan={currentDaySchedule.classNames.length}
+                          className="py-1.5 px-3 text-left font-bold text-sky-950 font-sans tracking-wide text-xs"
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="flex items-center gap-1.5 text-slate-800">
+                              <Utensils className="w-3.5 h-3.5 text-sky-600" />
+                              <span className="uppercase text-[10px] md:text-[11px] font-black tracking-wider text-sky-950">
+                                Intervalo de Almoço (50 min)
+                              </span>
+                            </span>
+                            {activeStatus === 'LUNCH_BREAK' && (
+                              <span className="px-2 py-0.5 rounded-full bg-amber-400 text-slate-950 font-mono text-[9px] md:text-[10px] font-black animate-pulse shadow-sm">
+                                EM ANDAMENTO • Restam {formattedTimeRemaining}
+                              </span>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+
+                    {/* Linha do Tempo Letivo (1º ao 7º) */}
+                    <tr
+                      key={period.slot.id}
+                      className={`transition-all duration-200 ${
+                        isCurrentActive
+                          ? 'bg-amber-100/90 ring-2 ring-amber-500 shadow-md'
+                          : 'hover:bg-slate-50'
+                      }`}
+                    >
+                      {/* TEMPOS Column */}
+                      <td
+                        className={`py-2 md:py-2.5 px-1 font-mono font-bold border-r border-slate-200 whitespace-nowrap ${
+                          isCurrentActive
+                            ? 'bg-amber-400 text-slate-950 font-black shadow-sm'
+                            : 'bg-slate-100 text-slate-800'
+                        }`}
+                      >
+                        <div className="flex items-center justify-center gap-0.5 md:gap-1">
+                          {isCurrentActive && <span className="w-1.5 h-1.5 rounded-full bg-slate-950 animate-ping" />}
+                          <span className="text-xs md:text-sm font-black">{period.slot.id}º</span>
+                        </div>
+                      </td>
+
+                      {/* HORÁRIO Column */}
+                      <td
+                        className={`py-2 md:py-2.5 px-1 font-mono text-[10px] md:text-xs font-bold border-r border-slate-200 whitespace-nowrap ${
+                          isCurrentActive
+                            ? 'bg-amber-200 text-slate-950 font-black'
+                            : 'bg-slate-50 text-slate-600'
+                        }`}
+                      >
+                        {period.slot.startTime}-{period.slot.endTime}
+                      </td>
+
+                      {/* Class Cells */}
+                      {currentDaySchedule.classNames.map(cName => {
+                        const asg = period.classes[cName];
+                        const isEmpty = !asg || asg.isVacant;
+
+                        if (isEmpty) {
+                          return (
+                            <td
+                              key={cName}
+                              className={`py-1 px-0.5 border-r border-slate-200 last:border-r-0 text-slate-400 font-mono text-[9px] md:text-[10px] ${
+                                selectedTeacher ? 'opacity-20' : 'opacity-40'
+                              }`}
+                            >
+                              {asg?.raw === 'VAGO' ? (
+                                <span className="text-rose-500 font-bold">VAGO</span>
+                              ) : (
+                                '-'
+                              )}
+                            </td>
+                          );
+                        }
+
+                        // Teacher matching
+                        const isTargetTeacher = selectedTeacher
+                          ? asg.teacher.toUpperCase() === selectedTeacher.name.toUpperCase()
+                          : false;
+
+                        const isTargetSubject =
+                          selectedSubject === 'TODAS' ||
+                          asg.subject.toUpperCase() === selectedSubject.toUpperCase();
+
+                        const isHighlighted = isTargetTeacher && isTargetSubject;
+                        const isDimmed = selectedTeacher !== null && !isHighlighted;
+
+                        const colorClass = TEACHER_COLORS_LIGHT[asg.teacher.toUpperCase()] || 'text-slate-800 font-black';
+
+                        return (
+                          <td
+                            key={cName}
+                            onClick={() => handleCellClick(asg, period.slot)}
+                            title={
+                              selectedTeacher && isHighlighted
+                                ? `Clique para abrir anotações da Turma ${asg.className}`
+                                : `Clique para focar no professor ${asg.teacher}`
+                            }
+                            className={`py-1 px-0.5 md:px-1 border-r border-slate-200 last:border-r-0 transition-all duration-150 cursor-pointer overflow-hidden ${
+                              isHighlighted
+                                ? 'highlighted-cell bg-cyan-100/90 shadow-[0_0_15px_rgba(2,132,199,0.35)] z-20 relative'
+                                : isDimmed
+                                ? 'opacity-15 grayscale-[80%]'
+                                : 'hover:bg-slate-100'
+                            }`}
+                          >
+                            <div
+                              className={`py-1 px-0.5 rounded-lg flex flex-col items-center justify-center transition-all ${
+                                isHighlighted
+                                  ? 'border-2 border-cyan-500 bg-white shadow-md scale-105'
+                                  : 'border border-transparent'
+                              }`}
+                            >
+                              <span className={`text-[10px] md:text-[11px] leading-none tracking-tight truncate w-full ${colorClass}`}>
+                                {asg.teacher}
+                              </span>
+
+                              {/* Suffix tag (PIC, EO, PV, CL, etc.) */}
+                              {!asg.isMainSubject && (
+                                <span className="text-[8px] md:text-[9px] font-mono font-black text-amber-700 mt-0.5 bg-amber-100 px-1 py-0.2 rounded border border-amber-300 leading-none">
+                                  {asg.subject}
+                                </span>
+                              )}
+                            </div>
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  </React.Fragment>
                 );
               })}
             </tbody>
