@@ -72,6 +72,18 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
     }
   };
 
+  const getNoteContent = (teacherName: string, slotId: number, className: string) => {
+    const key = `get_class_notes_${teacherName}_${currentDaySchedule.dayName}_slot${slotId}_${className}`;
+    const val = localStorage.getItem(key);
+    if (!val) return null;
+    try {
+      const parsed = JSON.parse(val);
+      return parsed.content || null;
+    } catch {
+      return val || null;
+    }
+  };
+
   // Highlight animation when teacher selection changes
   useEffect(() => {
     if (!containerRef.current) return;
@@ -87,6 +99,12 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
   }, [selectedTeacher, selectedSubject]);
 
   const handleCellClick = (asg: TeacherAssignment, slot: TimeSlotConfig) => {
+    // Se a célula já tem uma anotação salva, abre o modal de anotações diretamente
+    if (hasNote(asg.teacher, slot.id, asg.className)) {
+      onOpenClassNotes(slot, asg);
+      return;
+    }
+
     if (selectedTeacher) {
       if (asg.teacher.toUpperCase() === selectedTeacher.name.toUpperCase()) {
         onOpenClassNotes(slot, asg);
@@ -340,6 +358,13 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
                                   {asg.subject}
                                 </span>
                               )}
+
+                              {/* Preview do texto anotado */}
+                              {hasNote(asg.teacher, period.slot.id, cName) && (
+                                <span className="text-[7.5px] font-sans font-black text-amber-950 bg-amber-100/90 px-1 py-0.5 rounded border border-amber-200 mt-1 max-w-[95%] truncate text-center block leading-none select-none shadow-2xs">
+                                  {getNoteContent(asg.teacher, period.slot.id, cName)}
+                                </span>
+                              )}
                             </div>
                           </td>
                         );
@@ -498,6 +523,13 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
                               <FileText className="w-2.5 h-2.5 text-amber-500 animate-pulse shrink-0" />
                             )}
                           </span>
+
+                          {/* Preview do texto anotado no mobile */}
+                          {hasNote(asg.teacher, period.slot.id, cName) && (
+                            <span className="text-[9px] font-sans font-bold text-amber-950 bg-amber-100/80 px-1.5 py-0.5 rounded border border-amber-200 mt-1 max-w-full break-words text-left block leading-tight shadow-3xs">
+                              {getNoteContent(asg.teacher, period.slot.id, cName)}
+                            </span>
+                          )}
                         </div>
                       );
                     })}
