@@ -172,6 +172,19 @@ export function useScheduleTracker() {
     return now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
   }, [isSimulating, simulatedMinutes, now]);
 
+  const isTodaySelected = useMemo(() => {
+    const bDate = getBrasiliaDate();
+    const day = bDate.getDay();
+    const dayMap: Record<number, string> = {
+      1: '2ª FEIRA',
+      2: '3ª FEIRA',
+      3: '4ª FEIRA',
+      4: '5ª FEIRA',
+      5: '6ª FEIRA',
+    };
+    return dayMap[day] === selectedDayName;
+  }, [selectedDayName, now]);
+
   return {
     now,
     effectiveMinutes,
@@ -185,5 +198,6 @@ export function useScheduleTracker() {
     formattedCurrentTime,
     statusInfo,
     formattedTimeRemaining,
+    isTodaySelected,
   };
 }

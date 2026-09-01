@@ -7,7 +7,7 @@ import TimeSimulatorBar from './TimeSimulatorBar';
 import GetLogo3D from './GetLogo3D';
 import WeatherWidget3D from './WeatherWidget3D';
 import ClassNotesModal from './ClassNotesModal';
-import { Clock, Calendar, Sparkles, Award, Flame } from 'lucide-react';
+import { Clock, Calendar, Sparkles, Award, Flame, BookOpen, ExternalLink } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 export const ScheduleDashboard: React.FC = () => {
@@ -98,6 +98,19 @@ export const ScheduleDashboard: React.FC = () => {
               })}
             </div>
 
+            {/* Direct Link to Rioeduca Diário */}
+            <a
+              href="https://diario.rioeduca.rio.gov.br/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-3.5 py-1.5 rounded-2xl bg-gradient-to-b from-[#0284c7] via-[#0369a1] to-[#075985] text-white border border-cyan-400 border-b-[3px] border-b-cyan-900 flex items-center gap-1.5 text-xs font-black shadow-md hover:brightness-110 active:translate-y-0.5 active:border-b transition-all select-none"
+              title="Abrir Diário Rioeduca em nova aba"
+            >
+              <BookOpen className="w-4 h-4 text-white" />
+              <span>Diário</span>
+              <ExternalLink className="w-3 h-3 text-cyan-200" />
+            </a>
+
             {/* Brasília Time Digital Clock */}
             <div className="px-3 py-1.5 rounded-2xl bg-slate-50 border border-slate-200 flex items-center gap-2 shadow-sm">
               <Clock className="w-4 h-4 text-[#0284c7] animate-pulse" />
@@ -137,6 +150,8 @@ export const ScheduleDashboard: React.FC = () => {
             activeStatus={tracker.statusInfo.status}
             formattedTimeRemaining={tracker.formattedTimeRemaining}
             isTodayWeekend={isWeekend}
+            effectiveMinutes={tracker.effectiveMinutes}
+            isTodaySelected={tracker.isTodaySelected}
             onSelectTeacherByName={handleSelectTeacherByName}
             onOpenClassNotes={handleOpenClassNotes}
           />

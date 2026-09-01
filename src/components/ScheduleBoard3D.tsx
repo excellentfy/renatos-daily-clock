@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { DaySchedule, TeacherMeta, TimeSlotConfig, TeacherAssignment } from '@/data/scheduleData';
+import { DaySchedule, TeacherMeta, TimeSlotConfig, TeacherAssignment, BREAK_MORNING, BREAK_LUNCH } from '@/data/scheduleData';
 import { Sparkles, User, Coffee, Utensils, FileText } from 'lucide-react';
 import gsap from 'gsap';
 
@@ -11,6 +11,8 @@ interface ScheduleBoard3DProps {
   activeStatus: string;
   formattedTimeRemaining: string;
   isTodayWeekend: boolean;
+  effectiveMinutes?: number;
+  isTodaySelected?: boolean;
   onSelectTeacherByName: (name: string) => void;
   onOpenClassNotes: (slot: TimeSlotConfig, assignment: TeacherAssignment) => void;
 }
@@ -42,11 +44,25 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
   activeStatus,
   formattedTimeRemaining,
   isTodayWeekend,
+  effectiveMinutes = 0,
+  isTodaySelected = true,
   onSelectTeacherByName,
   onOpenClassNotes,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [notesVersion, setNotesVersion] = useState(0);
+
+  // Auto-scroll para centralizar a linha ou card do tempo/intervalo atual
+  useEffect(() => {
+    if (!isTodaySelected) return;
+    const timer = setTimeout(() => {
+      const activeEl = document.querySelector('.active-schedule-focus');
+      if (activeEl) {
+        activeEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 450);
+    return () => clearTimeout(timer);
+  }, [currentDaySchedule.dayName, isTodaySelected, activePeriodId, activeStatus]);
 
   useEffect(() => {
     const handleNotesUpdate = () => {
@@ -166,7 +182,14 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
             {/* Body rows with 1º to 7º + RECREIO (09:10 - 09:30) + ALMOÇO (12:00 - 12:50) */}
             <tbody className="divide-y divide-slate-200 font-sans text-xs">
               {currentDaySchedule.periods.map(period => {
-                const isCurrentActive = activePeriodId === period.slot.id;
+                const isCurrentActive = isTodaySelected && activePeriodId === period.slot.id;
+                const isPast = isTodaySelected && effectiveMinutes > 0 && period.slot.endMinutes <= effectiveMinutes;
+
+                const isBreakActive = isTodaySelected && activeStatus === 'MORNING_BREAK';
+                const isBreakPast = isTodaySelected && effectiveMinutes > 0 && BREAK_MORNING.endMinutes <= effectiveMinutes;
+
+                const isLunchActive = isTodaySelected && activeStatus === 'LUNCH_BREAK';
+                const isLunchPast = isTodaySelected && effectiveMinutes > 0 && BREAK_LUNCH.endMinutes <= effectiveMinutes;
 
                 return (
                   <React.Fragment key={period.slot.id}>
@@ -175,18 +198,20 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
                       <tr
                         key="break-morning"
                         className={`transition-all duration-200 ${
-                          activeStatus === 'MORNING_BREAK'
-                            ? 'bg-rose-100 ring-2 ring-rose-500 shadow-md font-bold'
+                          isBreakActive
+                            ? 'active-schedule-focus bg-rose-100 ring-4 ring-rose-500 shadow-md font-bold'
+                            : isBreakPast
+                            ? 'opacity-40 grayscale-[35%] bg-rose-50/40 border-y border-rose-100 hover:opacity-90 hover:grayscale-0'
                             : 'bg-rose-50/80 border-y border-rose-200 hover:bg-rose-100/60'
                         }`}
                       >
                         <td className={`py-1.5 px-1 font-mono text-[9px] md:text-[10px] font-black border-r border-slate-200 ${
-                          activeStatus === 'MORNING_BREAK' ? 'bg-rose-400 text-slate-950 font-black' : 'bg-rose-100 text-rose-900'
+                          isBreakActive ? 'bg-rose-400 text-slate-950 font-black' : 'bg-rose-100 text-rose-900'
                         }`}>
                           ☕ RECREIO
                         </td>
                         <td className={`py-1.5 px-1 font-mono text-[9px] md:text-[10px] font-bold border-r border-slate-200 ${
-                          activeStatus === 'MORNING_BREAK' ? 'bg-rose-200 text-slate-950 font-black' : 'bg-rose-50 text-rose-900'
+                          isBreakActive ? 'bg-rose-200 text-slate-950 font-black' : 'bg-rose-50 text-rose-900'
                         }`}>
                           09:10 às 09:30
                         </td>
@@ -201,7 +226,7 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
                                 Intervalo / Recreio (20 min)
                               </span>
                             </span>
-                            {activeStatus === 'MORNING_BREAK' && (
+                            {isBreakActive && (
                               <span className="px-2 py-0.5 rounded-full bg-rose-400 text-slate-950 font-mono text-[9px] md:text-[10px] font-black animate-pulse shadow-sm">
                                 EM ANDAMENTO • Restam {formattedTimeRemaining}
                               </span>
@@ -216,18 +241,20 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
                       <tr
                         key="break-lunch"
                         className={`transition-all duration-200 ${
-                          activeStatus === 'LUNCH_BREAK'
-                            ? 'bg-rose-100 ring-2 ring-rose-500 shadow-md font-bold'
+                          isLunchActive
+                            ? 'active-schedule-focus bg-rose-100 ring-4 ring-rose-500 shadow-md font-bold'
+                            : isLunchPast
+                            ? 'opacity-40 grayscale-[35%] bg-rose-50/40 border-y border-rose-100 hover:opacity-90 hover:grayscale-0'
                             : 'bg-rose-50/80 border-y border-rose-200 hover:bg-rose-100/60'
                         }`}
                       >
                         <td className={`py-1.5 px-1 font-mono text-[9px] md:text-[10px] font-black border-r border-slate-200 ${
-                          activeStatus === 'LUNCH_BREAK' ? 'bg-rose-400 text-slate-950 font-black' : 'bg-rose-100 text-rose-900'
+                          isLunchActive ? 'bg-rose-400 text-slate-950 font-black' : 'bg-rose-100 text-rose-900'
                         }`}>
                           🍽️ ALMOÇO
                         </td>
                         <td className={`py-1.5 px-1 font-mono text-[9px] md:text-[10px] font-bold border-r border-slate-200 ${
-                          activeStatus === 'LUNCH_BREAK' ? 'bg-rose-200 text-slate-950 font-black' : 'bg-rose-50 text-rose-900'
+                          isLunchActive ? 'bg-rose-200 text-slate-950 font-black' : 'bg-rose-50 text-rose-900'
                         }`}>
                           12:00 às 12:50
                         </td>
@@ -242,7 +269,7 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
                                 Intervalo de Almoço (50 min)
                               </span>
                             </span>
-                            {activeStatus === 'LUNCH_BREAK' && (
+                            {isLunchActive && (
                               <span className="px-2 py-0.5 rounded-full bg-rose-400 text-slate-950 font-mono text-[9px] md:text-[10px] font-black animate-pulse shadow-sm">
                                 EM ANDAMENTO • Restam {formattedTimeRemaining}
                               </span>
@@ -257,7 +284,9 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
                       key={period.slot.id}
                       className={`transition-all duration-200 ${
                         isCurrentActive
-                          ? 'bg-amber-100/90 ring-2 ring-amber-500 shadow-md'
+                          ? 'active-schedule-focus bg-amber-100/90 ring-4 ring-amber-400 ring-offset-1 shadow-lg font-bold'
+                          : isPast
+                          ? 'opacity-40 grayscale-[35%] hover:opacity-90 hover:grayscale-0'
                           : 'hover:bg-slate-50'
                       }`}
                     >
@@ -380,7 +409,14 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
         {/* Mobile Responsive Version - Elegant Card Grid (block md:hidden) */}
         <div className="block md:hidden p-3.5 space-y-4 bg-slate-50/50">
           {currentDaySchedule.periods.map(period => {
-            const isCurrentActive = activePeriodId === period.slot.id;
+            const isCurrentActive = isTodaySelected && activePeriodId === period.slot.id;
+            const isPast = isTodaySelected && effectiveMinutes > 0 && period.slot.endMinutes <= effectiveMinutes;
+
+            const isBreakActive = isTodaySelected && activeStatus === 'MORNING_BREAK';
+            const isBreakPast = isTodaySelected && effectiveMinutes > 0 && BREAK_MORNING.endMinutes <= effectiveMinutes;
+
+            const isLunchActive = isTodaySelected && activeStatus === 'LUNCH_BREAK';
+            const isLunchPast = isTodaySelected && effectiveMinutes > 0 && BREAK_LUNCH.endMinutes <= effectiveMinutes;
 
             return (
               <React.Fragment key={period.slot.id}>
@@ -388,8 +424,10 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
                 {period.slot.id === 3 && (
                   <div
                     className={`p-3 rounded-2xl border transition-all ${
-                      activeStatus === 'MORNING_BREAK'
-                        ? 'bg-rose-100 border-rose-400 ring-2 ring-rose-500 shadow-md'
+                      isBreakActive
+                        ? 'active-schedule-focus bg-rose-100 border-rose-400 ring-4 ring-rose-500 shadow-lg'
+                        : isBreakPast
+                        ? 'opacity-45 grayscale-[35%] bg-rose-50/40 border-rose-100'
                         : 'bg-rose-50/70 border-rose-200'
                     }`}
                   >
@@ -398,7 +436,7 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
                         <span className="px-2 py-0.5 rounded-lg bg-rose-200 text-rose-950 font-black text-[10px]">☕ RECREIO</span>
                         <span className="text-xs font-bold text-slate-700">09:10 às 09:30</span>
                       </div>
-                      {activeStatus === 'MORNING_BREAK' && (
+                      {isBreakActive && (
                         <span className="px-2 py-0.5 rounded-full bg-rose-400 text-slate-950 font-mono text-[9px] font-black animate-pulse shadow-sm">
                           Restam {formattedTimeRemaining}
                         </span>
@@ -414,8 +452,10 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
                 {period.slot.id === 6 && (
                   <div
                     className={`p-3 rounded-2xl border transition-all ${
-                      activeStatus === 'LUNCH_BREAK'
-                        ? 'bg-rose-100 border-rose-400 ring-2 ring-rose-500 shadow-md'
+                      isLunchActive
+                        ? 'active-schedule-focus bg-rose-100 border-rose-400 ring-4 ring-rose-500 shadow-lg'
+                        : isLunchPast
+                        ? 'opacity-45 grayscale-[35%] bg-rose-50/40 border-rose-100'
                         : 'bg-rose-50/70 border-rose-200'
                     }`}
                   >
@@ -424,7 +464,7 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
                         <span className="px-2 py-0.5 rounded-lg bg-rose-200 text-rose-950 font-black text-[10px]">🍽️ ALMOÇO</span>
                         <span className="text-xs font-bold text-slate-700">12:00 às 12:50</span>
                       </div>
-                      {activeStatus === 'LUNCH_BREAK' && (
+                      {isLunchActive && (
                         <span className="px-2 py-0.5 rounded-full bg-rose-400 text-slate-950 font-mono text-[9px] font-black animate-pulse shadow-sm">
                           Restam {formattedTimeRemaining}
                         </span>
@@ -440,7 +480,9 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
                 <div
                   className={`rounded-2xl border overflow-hidden transition-all shadow-sm ${
                     isCurrentActive
-                      ? 'border-amber-400 ring-2 ring-amber-500 bg-amber-50/20'
+                      ? 'active-schedule-focus border-amber-400 ring-4 ring-amber-400 ring-offset-1 bg-amber-50/30 shadow-md'
+                      : isPast
+                      ? 'opacity-45 grayscale-[35%] border-slate-200 bg-slate-50/50'
                       : 'border-slate-200 bg-white'
                   }`}
                 >
