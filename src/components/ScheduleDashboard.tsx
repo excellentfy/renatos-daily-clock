@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useScheduleTracker } from '@/hooks/useScheduleTracker';
 import { getAllTeachers, getTeacherClassesForDay, TeacherMeta, WEEK_DAYS, TimeSlotConfig, TeacherAssignment } from '@/data/scheduleData';
 import ScheduleBoard3D from './ScheduleBoard3D';
@@ -7,7 +7,9 @@ import TimeSimulatorBar from './TimeSimulatorBar';
 import GetLogo3D from './GetLogo3D';
 import WeatherWidget3D from './WeatherWidget3D';
 import ClassNotesModal from './ClassNotesModal';
-import { Clock, Calendar, Sparkles, Award, Flame, BookOpen, ExternalLink } from 'lucide-react';
+import AbsenceAdvancementModal from './AbsenceAdvancementModal';
+import { buildAdjustedSchedule, ActiveAdvancement } from '@/utils/advancementEngine';
+import { Clock, Calendar, Sparkles, Award, Flame, BookOpen, ExternalLink, Zap, UserX, Layers } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 export const ScheduleDashboard: React.FC = () => {
@@ -25,6 +27,82 @@ export const ScheduleDashboard: React.FC = () => {
   const [notesModalOpen, setNotesModalOpen] = useState(false);
   const [activeNoteSlot, setActiveNoteSlot] = useState<TimeSlotConfig | null>(null);
   const [activeNoteAssignment, setActiveNoteAssignment] = useState<TeacherAssignment | null>(null);
+
+  // Absence & Advancement State per day (with localStorage persistence)
+  const [advancementModalOpen, setAdvancementModalOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<'OFFICIAL' | 'ADJUSTED'>('ADJUSTED');
+
+  const [absentTeachersByDay, setAbsentTeachersByDay] = useState<Record<string, string[]>>(() => {
+    try {
+      const saved = localStorage.getItem('get_absent_teachers_map');
+      return saved ? JSON.parse(saved) : {};
+    } catch {
+      return {};
+    }
+  });
+
+  const [activeAdvancementsByDay, setActiveAdvancementsByDay] = useState<Record<string, ActiveAdvancement[]>>(() => {
+    try {
+      const saved = localStorage.getItem('get_active_advancements_map');
+      return saved ? JSON.parse(saved) : {};
+    } catch {
+      return {};
+    }
+  });
+
+  useEffect(() => {
+    localStorage.setItem('get_absent_teachers_map', JSON.stringify(absentTeachersByDay));
+  }, [absentTeachersByDay]);
+
+  useEffect(() => {
+    localStorage.setItem('get_active_advancements_map', JSON.stringify(activeAdvancementsByDay));
+  }, [activeAdvancementsByDay]);
+
+  const currentAbsentTeachers = useMemo(() => {
+    return absentTeachersByDay[tracker.selectedDayName] || [];
+  }, [absentTeachersByDay, tracker.selectedDayName]);
+
+  const currentAdvancements = useMemo(() => {
+    return activeAdvancementsByDay[tracker.selectedDayName] || [];
+  }, [activeAdvancementsByDay, tracker.selectedDayName]);
+
+  const handleToggleAbsentTeacher = (teacherName: string) => {
+    setAbsentTeachersByDay(prev => {
+      const current = prev[tracker.selectedDayName] || [];
+      const upper = teacherName.toUpperCase();
+      const next = current.includes(upper) ? current.filter(t => t !== upper) : [...current, upper];
+      return { ...prev, [tracker.selectedDayName]: next };
+    });
+  };
+
+  const handleClearAbsentTeachers = () => {
+    setAbsentTeachersByDay(prev => ({ ...prev, [tracker.selectedDayName]: [] }));
+  };
+
+  const handleApplyAdvancement = (adv: ActiveAdvancement) => {
+    setActiveAdvancementsByDay(prev => {
+      const current = prev[tracker.selectedDayName] || [];
+      const filtered = current.filter(a => a.id !== adv.id);
+      return { ...prev, [tracker.selectedDayName]: [...filtered, adv] };
+    });
+  };
+
+  const handleRemoveAdvancement = (id: string) => {
+    setActiveAdvancementsByDay(prev => {
+      const current = prev[tracker.selectedDayName] || [];
+      return { ...prev, [tracker.selectedDayName]: current.filter(a => a.id !== id) };
+    });
+  };
+
+  const handleClearAdvancements = () => {
+    setActiveAdvancementsByDay(prev => ({ ...prev, [tracker.selectedDayName]: [] }));
+  };
+
+  // Computa a grade letiva efetiva (Oficial ou com Adiantamentos aplicados)
+  const effectiveDaySchedule = useMemo(() => {
+    if (viewMode === 'OFFICIAL') return tracker.currentDaySchedule;
+    return buildAdjustedSchedule(tracker.currentDaySchedule, currentAbsentTeachers, currentAdvancements);
+  }, [tracker.currentDaySchedule, currentAbsentTeachers, currentAdvancements, viewMode]);
 
   const isWeekend = useMemo(() => {
     const d = tracker.now.getDay();
@@ -111,6 +189,27 @@ export const ScheduleDashboard: React.FC = () => {
               <ExternalLink className="w-3 h-3 text-cyan-200" />
             </a>
 
+            {/* Faltas & Adiantamentos Button */}
+            <button
+              onClick={() => setAdvancementModalOpen(true)}
+              className={`px-3.5 py-1.5 rounded-2xl border flex items-center gap-1.5 text-xs font-black shadow-md transition-all select-none ${
+                currentAbsentTeachers.length > 0 || currentAdvancements.length > 0
+                  ? 'bg-gradient-to-b from-amber-400 to-amber-500 text-slate-950 border-amber-300 border-b-[3px] border-b-amber-700 hover:brightness-105 active:translate-y-0.5 active:border-b'
+                  : 'bg-gradient-to-b from-slate-800 to-slate-900 text-amber-400 border-slate-700 border-b-[3px] border-b-slate-950 hover:brightness-110 active:translate-y-0.5 active:border-b'
+              }`}
+              title="Gerenciar faltas de professores e adiantamentos de aulas"
+            >
+              <Zap className={`w-3.5 h-3.5 ${currentAbsentTeachers.length > 0 ? 'text-slate-950 animate-bounce' : 'text-amber-400'}`} />
+              <span>Faltas & Adiantamentos</span>
+              {(currentAbsentTeachers.length > 0 || currentAdvancements.length > 0) && (
+                <span className="px-1.5 py-0.2 rounded-full bg-slate-950 text-amber-300 text-[10px] font-mono font-black">
+                  {currentAbsentTeachers.length > 0 ? `${currentAbsentTeachers.length}F` : ''}
+                  {currentAbsentTeachers.length > 0 && currentAdvancements.length > 0 ? ' • ' : ''}
+                  {currentAdvancements.length > 0 ? `${currentAdvancements.length}A` : ''}
+                </span>
+              )}
+            </button>
+
             {/* Brasília Time Digital Clock */}
             <div className="px-3 py-1.5 rounded-2xl bg-slate-50 border border-slate-200 flex items-center gap-2 shadow-sm">
               <Clock className="w-4 h-4 text-[#0284c7] animate-pulse" />
@@ -140,10 +239,55 @@ export const ScheduleDashboard: React.FC = () => {
           currentDayName={tracker.selectedDayName}
         />
 
+        {/* Status Bar / Toggle for Adjusted Schedule Mode (when absences exist) */}
+        {(currentAbsentTeachers.length > 0 || currentAdvancements.length > 0) && (
+          <div className="flex flex-wrap items-center justify-between gap-2 p-2.5 rounded-2xl bg-amber-50/90 border border-amber-200 shadow-sm animate-in fade-in">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold text-amber-950 flex items-center gap-1.5">
+                <Zap className="w-4 h-4 text-amber-600" />
+                Visualização do Quadro:
+              </span>
+              <div className="flex items-center gap-1 bg-white p-1 rounded-xl border border-amber-200 shadow-2xs">
+                <button
+                  onClick={() => setViewMode('OFFICIAL')}
+                  className={`px-3 py-1 rounded-lg text-xs font-black transition-all ${
+                    viewMode === 'OFFICIAL' ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  Grade Oficial
+                </button>
+                <button
+                  onClick={() => setViewMode('ADJUSTED')}
+                  className={`px-3 py-1 rounded-lg text-xs font-black transition-all flex items-center gap-1 ${
+                    viewMode === 'ADJUSTED'
+                      ? 'bg-amber-400 text-slate-950 shadow-xs'
+                      : 'text-slate-600 hover:text-slate-950'
+                  }`}
+                >
+                  <Zap className="w-3 h-3 text-slate-950" />
+                  <span>Grade com Adiantamentos</span>
+                </button>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <span className="text-[11px] text-amber-900 font-mono font-bold">
+                {currentAbsentTeachers.length} Falta(s) • {currentAdvancements.length} Adiantamento(s)
+              </span>
+              <button
+                onClick={() => setAdvancementModalOpen(true)}
+                className="px-2.5 py-1 rounded-lg bg-amber-200 text-amber-950 font-black text-xs hover:bg-amber-300 transition-all"
+              >
+                Gerenciar Faltas
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* 2. MAIN HERO CENTERPIECE: 3D SCHEDULE BOARD (Directly below teacher selector) */}
         <main className="w-full">
           <ScheduleBoard3D
-            currentDaySchedule={tracker.currentDaySchedule}
+            currentDaySchedule={effectiveDaySchedule}
             selectedTeacher={selectedTeacher}
             selectedSubject={selectedSubject}
             activePeriodId={tracker.statusInfo.activeSlot?.id || null}
@@ -265,6 +409,21 @@ export const ScheduleDashboard: React.FC = () => {
           dayName={tracker.selectedDayName}
           slot={activeNoteSlot}
           assignment={activeNoteAssignment}
+        />
+
+        {/* Modal Inteligente de Gestão de Faltas e Adiantamentos */}
+        <AbsenceAdvancementModal
+          isOpen={advancementModalOpen}
+          onClose={() => setAdvancementModalOpen(false)}
+          daySchedule={tracker.currentDaySchedule}
+          teachers={teachers}
+          absentTeachers={currentAbsentTeachers}
+          onToggleAbsentTeacher={handleToggleAbsentTeacher}
+          onClearAbsentTeachers={handleClearAbsentTeachers}
+          activeAdvancements={currentAdvancements}
+          onApplyAdvancement={handleApplyAdvancement}
+          onRemoveAdvancement={handleRemoveAdvancement}
+          onClearAdvancements={handleClearAdvancements}
         />
 
         {/* Footer */}

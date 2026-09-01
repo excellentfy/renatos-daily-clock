@@ -351,7 +351,14 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
                         const isHighlighted = isTargetTeacher && isTargetSubject;
                         const isDimmed = selectedTeacher !== null && !isHighlighted;
 
-                        const colorClass = TEACHER_COLORS_LIGHT[asg.teacher.toUpperCase()] || 'text-slate-800 font-black';
+                        const isAbsentCell = asg.teacher.startsWith('FALTA');
+                        const isRelievedCell = asg.teacher.startsWith('LIBERADO');
+
+                        const colorClass = isAbsentCell
+                          ? 'text-rose-700 font-black'
+                          : isRelievedCell
+                          ? 'text-emerald-700 font-black'
+                          : TEACHER_COLORS_LIGHT[asg.teacher.toUpperCase()] || 'text-slate-800 font-black';
 
                         return (
                           <td
@@ -371,6 +378,10 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
                               className={`py-1 px-0.5 rounded-xl flex flex-col items-center justify-center transition-all duration-150 select-none ${
                                 isHighlighted
                                   ? 'highlighted-cell bg-gradient-to-b from-cyan-50 via-white to-cyan-50/80 border-2 border-cyan-500 border-b-4 border-b-cyan-600 shadow-[0_4px_12px_rgba(2,132,199,0.35),inset_0_1px_0_rgba(255,255,255,1)] -translate-y-0.5 active:translate-y-0.5 active:border-b-2'
+                                  : isAbsentCell
+                                  ? 'bg-gradient-to-b from-rose-50 to-rose-100/70 border border-rose-300 border-b-2 border-b-rose-400 shadow-sm'
+                                  : isRelievedCell
+                                  ? 'bg-gradient-to-b from-emerald-50 to-emerald-100/70 border border-emerald-300 border-b-2 border-b-emerald-400 shadow-sm'
                                   : 'bg-gradient-to-b from-white to-slate-50 border border-slate-200/90 border-b-2 border-b-slate-300/80 shadow-[0_2px_4px_rgba(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.9)] hover:-translate-y-0.5 hover:shadow-[0_4px_8px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,1)] hover:border-slate-300 active:translate-y-0.5 active:border-b active:shadow-inner'
                               }`}
                             >
@@ -535,7 +546,14 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
                       const isHighlighted = isTargetTeacher && isTargetSubject;
                       const isDimmed = selectedTeacher !== null && !isHighlighted;
 
-                      const colorClass = TEACHER_COLORS_LIGHT[asg.teacher.toUpperCase()] || 'text-slate-800 font-black';
+                      const isAbsentCell = asg.teacher.startsWith('FALTA');
+                      const isRelievedCell = asg.teacher.startsWith('LIBERADO');
+
+                      const colorClass = isAbsentCell
+                        ? 'text-rose-700 font-black'
+                        : isRelievedCell
+                        ? 'text-emerald-700 font-black'
+                        : TEACHER_COLORS_LIGHT[asg.teacher.toUpperCase()] || 'text-slate-800 font-black';
 
                       return (
                         <div
@@ -546,6 +564,10 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
                           } ${
                             isHighlighted
                               ? 'bg-gradient-to-b from-cyan-50 via-white to-cyan-50/80 border-2 border-cyan-500 border-b-[5px] border-b-cyan-600 shadow-[0_6px_12px_rgba(2,132,199,0.3),inset_0_1px_0_rgba(255,255,255,1)] -translate-y-0.5'
+                              : isAbsentCell
+                              ? 'bg-gradient-to-b from-rose-50 to-rose-100/70 border border-rose-300 border-b-[4px] border-b-rose-400 shadow-sm'
+                              : isRelievedCell
+                              ? 'bg-gradient-to-b from-emerald-50 to-emerald-100/70 border border-emerald-300 border-b-[4px] border-b-emerald-400 shadow-sm'
                               : 'bg-gradient-to-b from-white to-slate-50 border border-slate-200/90 border-b-[4px] border-b-slate-300 shadow-[0_4px_8px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.9)] hover:-translate-y-0.5 active:translate-y-[1px] active:border-b-[2px] active:shadow-inner'
                           }`}
                         >
