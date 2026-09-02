@@ -179,30 +179,25 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
           </div>
         </div>
 
-        {/* Mobile Swipe Guidance Banner */}
-        <div className="md:hidden flex items-center justify-between px-3.5 py-2 bg-slate-900 text-cyan-300 text-[11px] font-bold border-b border-slate-800 shadow-inner">
-          <span className="flex items-center gap-1.5 font-sans">👉 Deslize para o lado para ver todas as turmas</span>
-          <span className="text-slate-300 bg-slate-800 px-2 py-0.5 rounded font-mono text-[10px]">1º ao 7º Tempo</span>
-        </div>
-
-        {/* The Official Schedule Table Matrix - Unified Tactile Button Grid (Mobile & Desktop) */}
-        <div className="w-full overflow-x-auto overscroll-x-contain pb-2">
-          <table className="w-full border-collapse text-center bg-white min-w-[780px] md:min-w-full md:table-fixed">
-            {/* Header row with TEMPOS, HORÁRIO, Classes */}
+        {/* The Official Schedule Table Matrix - 100% Screen-Fitted (No Horizontal Scroll) */}
+        <div className="w-full overflow-hidden">
+          <table className="w-full border-collapse text-center table-fixed bg-white">
+            {/* Header row with TEMPOS, HORÁRIO (desktop), Classes */}
             <thead>
-              <tr className="bg-[#0f172a] border-b-2 border-slate-300 text-white font-mono text-[10px] md:text-xs">
-                <th className="sticky left-0 z-30 py-2.5 px-1.5 font-black bg-[#0f172a] text-cyan-300 border-r border-slate-700 tracking-wider w-[54px] min-w-[54px] md:w-[68px] shadow-[2px_0_6px_rgba(0,0,0,0.25)]">
-                  TEMPOS
+              <tr className="bg-[#0f172a] border-b-2 border-slate-300 text-white font-mono text-[9.5px] md:text-xs">
+                <th className="py-2 px-0.5 sm:px-1 font-black bg-[#0f172a] text-cyan-300 border-r border-slate-700 tracking-tight w-[28px] sm:w-[36px] md:w-[64px] shadow-inner">
+                  <span className="md:hidden">T.</span>
+                  <span className="hidden md:inline">TEMPOS</span>
                 </th>
-                <th className="sticky left-[54px] md:static z-30 py-2.5 px-1.5 font-black bg-[#1e293b] text-sky-200 border-r border-slate-700 tracking-wider w-[78px] min-w-[78px] md:w-[98px] shadow-[2px_0_6px_rgba(0,0,0,0.18)]">
+                <th className="hidden md:table-cell py-2 px-1.5 font-black bg-[#1e293b] text-sky-200 border-r border-slate-700 tracking-wider md:w-[88px] shadow-inner">
                   HORÁRIO
                 </th>
                 {currentDaySchedule.classNames.map(cName => (
                   <th
                     key={cName}
-                    className="py-2.5 px-1 font-black bg-[#0f172a] text-white border-r border-slate-700 tracking-tight last:border-r-0 min-w-[86px] md:min-w-0"
+                    className="py-1.5 sm:py-2 px-[1px] sm:px-0.5 md:px-1 font-black bg-[#0f172a] text-white border-r border-slate-700 tracking-tight last:border-r-0"
                   >
-                    <span className="inline-block w-full py-1 rounded-lg bg-slate-800 border border-slate-600 border-b-2 border-b-slate-950 text-[11.5px] md:text-[11px] font-black shadow-[0_2px_4px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.15)] text-slate-100 uppercase">
+                    <span className="inline-block w-full py-0.5 rounded bg-slate-800 border border-slate-700 border-b-2 border-b-slate-950 text-[8.5px] xs:text-[9px] sm:text-[10px] md:text-[11px] font-black shadow-[0_1px_3px_rgba(0,0,0,0.3)] text-slate-100 uppercase tracking-tighter truncate">
                       {cName}
                     </span>
                   </th>
@@ -236,30 +231,30 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
                             : 'bg-rose-50/80 border-y border-rose-200 hover:bg-rose-100/60'
                         }`}
                       >
-                        <td className={`sticky left-0 z-20 py-2 px-1 font-mono text-[9.5px] md:text-[10px] font-black border-r border-slate-200 shadow-[2px_0_6px_rgba(0,0,0,0.08)] ${
+                        <td className={`py-1 px-0.5 font-mono text-[9px] sm:text-[10px] font-black border-r border-slate-200 ${
                           isBreakActive ? 'bg-rose-400 text-slate-950 font-black' : 'bg-rose-100 text-rose-900'
                         }`}>
-                          ☕ RECREIO
+                          ☕
                         </td>
-                        <td className={`sticky left-[54px] md:static z-20 py-2 px-1 font-mono text-[9px] md:text-[10px] font-bold border-r border-slate-200 shadow-[2px_0_6px_rgba(0,0,0,0.08)] ${
+                        <td className={`hidden md:table-cell py-1.5 px-1 font-mono text-[10px] font-bold border-r border-slate-200 ${
                           isBreakActive ? 'bg-rose-200 text-slate-950 font-black' : 'bg-rose-50 text-rose-900'
                         }`}>
                           09:10 às 09:30
                         </td>
                         <td
                           colSpan={currentDaySchedule.classNames.length}
-                          className="py-2 px-3 text-left font-bold text-rose-950 font-sans tracking-wide text-xs"
+                          className="py-1 px-2 text-left font-bold text-rose-950 font-sans tracking-wide text-[10px] sm:text-xs"
                         >
                           <div className="flex items-center justify-between">
-                            <span className="flex items-center gap-1.5 text-slate-800">
-                              <Coffee className="w-3.5 h-3.5 text-rose-600" />
-                              <span className="uppercase text-[10px] md:text-[11px] font-black tracking-wider text-rose-950">
-                                Intervalo / Recreio (20 min)
+                            <span className="flex items-center gap-1 text-slate-800">
+                              <Coffee className="w-3 h-3 text-rose-600 shrink-0" />
+                              <span className="uppercase text-[9px] sm:text-[10px] md:text-[11px] font-black tracking-wider text-rose-950">
+                                Recreio (09:10 às 09:30)
                               </span>
                             </span>
                             {isBreakActive && (
-                              <span className="px-2 py-0.5 rounded-full bg-rose-400 text-slate-950 font-mono text-[9px] md:text-[10px] font-black animate-pulse shadow-sm">
-                                EM ANDAMENTO • Restam {formattedTimeRemaining}
+                              <span className="px-1.5 py-0.2 rounded-full bg-rose-400 text-slate-950 font-mono text-[8.5px] sm:text-[9.5px] font-black animate-pulse shadow-sm">
+                                Restam {formattedTimeRemaining}
                               </span>
                             )}
                           </div>
@@ -279,30 +274,30 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
                             : 'bg-rose-50/80 border-y border-rose-200 hover:bg-rose-100/60'
                         }`}
                       >
-                        <td className={`sticky left-0 z-20 py-2 px-1 font-mono text-[9.5px] md:text-[10px] font-black border-r border-slate-200 shadow-[2px_0_6px_rgba(0,0,0,0.08)] ${
+                        <td className={`py-1 px-0.5 font-mono text-[9px] sm:text-[10px] font-black border-r border-slate-200 ${
                           isLunchActive ? 'bg-rose-400 text-slate-950 font-black' : 'bg-rose-100 text-rose-900'
                         }`}>
-                          🍽️ ALMOÇO
+                          🍽️
                         </td>
-                        <td className={`sticky left-[54px] md:static z-20 py-2 px-1 font-mono text-[9px] md:text-[10px] font-bold border-r border-slate-200 shadow-[2px_0_6px_rgba(0,0,0,0.08)] ${
+                        <td className={`hidden md:table-cell py-1.5 px-1 font-mono text-[10px] font-bold border-r border-slate-200 ${
                           isLunchActive ? 'bg-rose-200 text-slate-950 font-black' : 'bg-rose-50 text-rose-900'
                         }`}>
                           12:00 às 12:50
                         </td>
                         <td
                           colSpan={currentDaySchedule.classNames.length}
-                          className="py-2 px-3 text-left font-bold text-rose-950 font-sans tracking-wide text-xs"
+                          className="py-1 px-2 text-left font-bold text-rose-950 font-sans tracking-wide text-[10px] sm:text-xs"
                         >
                           <div className="flex items-center justify-between">
-                            <span className="flex items-center gap-1.5 text-slate-800">
-                              <Utensils className="w-3.5 h-3.5 text-rose-600" />
-                              <span className="uppercase text-[10px] md:text-[11px] font-black tracking-wider text-rose-950">
-                                Intervalo de Almoço (50 min)
+                            <span className="flex items-center gap-1 text-slate-800">
+                              <Utensils className="w-3 h-3 text-rose-600 shrink-0" />
+                              <span className="uppercase text-[9px] sm:text-[10px] md:text-[11px] font-black tracking-wider text-rose-950">
+                                Almoço (12:00 às 12:50)
                               </span>
                             </span>
                             {isLunchActive && (
-                              <span className="px-2 py-0.5 rounded-full bg-rose-400 text-slate-950 font-mono text-[9px] md:text-[10px] font-black animate-pulse shadow-sm">
-                                EM ANDAMENTO • Restam {formattedTimeRemaining}
+                              <span className="px-1.5 py-0.2 rounded-full bg-rose-400 text-slate-950 font-mono text-[8.5px] sm:text-[9.5px] font-black animate-pulse shadow-sm">
+                                Restam {formattedTimeRemaining}
                               </span>
                             )}
                           </div>
@@ -321,23 +316,28 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
                           : 'hover:bg-slate-50'
                       }`}
                     >
-                      {/* TEMPOS Column - Tactile Key Style with Sticky Position */}
+                      {/* TEMPOS Column - Tactile Key Style */}
                       <td
-                        className={`sticky left-0 z-20 py-2 px-1 font-mono font-bold border-r border-slate-200 whitespace-nowrap shadow-[2px_0_6px_rgba(0,0,0,0.08)] ${
+                        className={`py-1 px-0.5 font-mono font-bold border-r border-slate-200 whitespace-nowrap ${
                           isCurrentActive
                             ? 'bg-amber-400 text-slate-950 font-black shadow-sm'
                             : 'bg-slate-100 text-slate-800'
                         }`}
                       >
-                        <div className="flex items-center justify-center gap-0.5 md:gap-1">
-                          {isCurrentActive && <span className="w-1.5 h-1.5 rounded-full bg-slate-950 animate-ping" />}
-                          <span className="text-xs md:text-sm font-black">{period.slot.id}º</span>
+                        <div className="flex flex-col items-center justify-center leading-none">
+                          <div className="flex items-center justify-center gap-0.5">
+                            {isCurrentActive && <span className="w-1.5 h-1.5 rounded-full bg-slate-950 animate-ping" />}
+                            <span className="text-[10px] sm:text-xs md:text-sm font-black">{period.slot.id}º</span>
+                          </div>
+                          <span className="text-[6.5px] sm:text-[7.5px] text-slate-500 font-mono mt-0.5 md:hidden">
+                            {period.slot.startTime}
+                          </span>
                         </div>
                       </td>
 
-                      {/* HORÁRIO Column with Sticky Position on Mobile */}
+                      {/* HORÁRIO Column (visible on md+) */}
                       <td
-                        className={`sticky left-[54px] md:static z-20 py-2 px-1 font-mono text-[10px] md:text-xs font-bold border-r border-slate-200 whitespace-nowrap shadow-[2px_0_6px_rgba(0,0,0,0.08)] ${
+                        className={`hidden md:table-cell py-1.5 px-1 font-mono text-[10px] md:text-xs font-bold border-r border-slate-200 whitespace-nowrap ${
                           isCurrentActive
                             ? 'bg-amber-200 text-slate-950 font-black'
                             : 'bg-slate-50 text-slate-600'
@@ -355,12 +355,12 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
                           return (
                             <td
                               key={cName}
-                              className={`py-2 px-1 border-r border-slate-200 last:border-r-0 text-slate-400 font-mono text-[10px] ${
+                              className={`py-1 px-[1px] sm:px-0.5 border-r border-slate-200 last:border-r-0 text-slate-400 font-mono text-[8.5px] sm:text-[10px] ${
                                 selectedTeacher ? 'opacity-20' : 'opacity-40'
                               }`}
                             >
                               {asg?.raw === 'VAGO' ? (
-                                <span className="inline-block px-1.5 py-0.5 rounded bg-rose-50 text-rose-600 font-black border border-rose-200 border-b-2 border-b-rose-300 text-[9px]">
+                                <span className="inline-block px-1 py-0.2 rounded bg-rose-50 text-rose-600 font-black border border-rose-200 text-[7.5px] sm:text-[9px]">
                                   VAGO
                                 </span>
                               ) : (
@@ -418,52 +418,52 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
                                 ? `Prof. ${selectedTeacher?.name} pode adiantar a aula da Turma ${asg.className}!`
                                 : `Clique para focar no professor ${asg.teacher}`
                             }
-                            className={`p-1 border-r border-slate-200 last:border-r-0 transition-all duration-150 cursor-pointer overflow-hidden ${
+                            className={`p-[1px] sm:p-0.5 md:p-1 border-r border-slate-200 last:border-r-0 transition-all duration-150 cursor-pointer overflow-hidden ${
                               isDimmed ? 'opacity-15 grayscale-[80%]' : ''
                             }`}
                           >
                             {/* Tactile Skeuomorphic / Neumorphic 3D Push Button */}
                             <div
-                              className={`py-1.5 px-1 rounded-xl flex flex-col items-center justify-center transition-all duration-150 select-none min-h-[48px] md:min-h-[44px] ${
+                              className={`py-1 sm:py-1.5 px-0.5 rounded-lg sm:rounded-xl flex flex-col items-center justify-center transition-all duration-150 select-none min-h-[42px] sm:min-h-[46px] md:min-h-[44px] ${
                                 isHighlighted
                                   ? isAbsentCell
-                                    ? 'highlighted-cell bg-gradient-to-b from-rose-50 via-white to-rose-100/80 border-2 border-rose-500 border-b-4 border-b-rose-600 ring-2 ring-rose-400 shadow-md'
+                                    ? 'highlighted-cell bg-gradient-to-b from-rose-50 via-white to-rose-100/80 border-2 border-rose-500 border-b-[3px] sm:border-b-4 border-b-rose-600 ring-2 ring-rose-400 shadow-md'
                                     : isRelievedCell
-                                    ? 'highlighted-cell bg-gradient-to-b from-emerald-50 via-white to-emerald-100/80 border-2 border-emerald-500 border-b-4 border-b-emerald-600 ring-2 ring-emerald-400 shadow-md'
-                                    : 'highlighted-cell bg-gradient-to-b from-cyan-50 via-white to-cyan-50/80 border-2 border-cyan-500 border-b-4 border-b-cyan-600 shadow-[0_4px_12px_rgba(2,132,199,0.35),inset_0_1px_0_rgba(255,255,255,1)] -translate-y-0.5 active:translate-y-0.5 active:border-b-2'
+                                    ? 'highlighted-cell bg-gradient-to-b from-emerald-50 via-white to-emerald-100/80 border-2 border-emerald-500 border-b-[3px] sm:border-b-4 border-b-emerald-600 ring-2 ring-emerald-400 shadow-md'
+                                    : 'highlighted-cell bg-gradient-to-b from-cyan-50 via-white to-cyan-50/80 border-2 border-cyan-500 border-b-[3px] sm:border-b-4 border-b-cyan-600 shadow-[0_2px_8px_rgba(2,132,199,0.35),inset_0_1px_0_rgba(255,255,255,1)] -translate-y-0.5 active:translate-y-0.5'
                                   : canAdvance
-                                  ? 'bg-gradient-to-b from-amber-50 via-amber-100/80 to-amber-200/90 border-2 border-amber-500 border-b-4 border-b-amber-600 ring-2 ring-amber-400 shadow-md animate-pulse'
+                                  ? 'bg-gradient-to-b from-amber-50 via-amber-100/80 to-amber-200/90 border border-amber-500 border-b-2 sm:border-b-4 border-b-amber-600 ring-1 ring-amber-400 shadow-md animate-pulse'
                                   : isAbsentCell
-                                  ? 'bg-gradient-to-b from-rose-50 to-rose-100/70 border border-rose-300 border-b-2 border-b-rose-400 shadow-sm'
+                                  ? 'bg-gradient-to-b from-rose-50 to-rose-100/70 border border-rose-300 border-b-2 border-b-rose-400 shadow-xs'
                                   : isRelievedCell
-                                  ? 'bg-gradient-to-b from-emerald-50 to-emerald-100/70 border border-emerald-300 border-b-2 border-b-emerald-400 shadow-sm'
-                                  : 'bg-gradient-to-b from-white to-slate-50 border border-slate-200/90 border-b-2 border-b-slate-300/80 shadow-[0_2px_4px_rgba(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.9)] hover:-translate-y-0.5 hover:shadow-[0_4px_8px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,1)] hover:border-slate-300 active:translate-y-0.5 active:border-b active:shadow-inner'
+                                  ? 'bg-gradient-to-b from-emerald-50 to-emerald-100/70 border border-emerald-300 border-b-2 border-b-emerald-400 shadow-xs'
+                                  : 'bg-gradient-to-b from-white to-slate-50 border border-slate-200/90 border-b sm:border-b-2 border-b-slate-300/80 shadow-[0_1px_3px_rgba(0,0,0,0.03),inset_0_1px_0_rgba(255,255,255,0.9)] hover:-translate-y-0.5 hover:border-slate-300 active:translate-y-0.5 active:border-b'
                               }`}
                             >
-                              <span className={`text-[11.5px] md:text-[11px] leading-tight tracking-tight truncate w-full flex items-center justify-center gap-1 ${colorClass}`}>
+                              <span className={`text-[7.5px] xs:text-[8px] sm:text-[9.5px] md:text-[11px] leading-tight tracking-tighter truncate w-full flex items-center justify-center gap-0.5 ${colorClass}`}>
                                 {asg.teacher}
                                 {hasNote(asg.teacher, period.slot.id, cName) && (
-                                  <FileText className="w-3 h-3 text-amber-500 animate-pulse shrink-0" />
+                                  <FileText className="w-2 h-2 sm:w-2.5 sm:h-2.5 text-amber-500 animate-pulse shrink-0" />
                                 )}
                               </span>
 
                               {/* Badge de Oportunidade de Adiantar para o professor selecionado */}
                               {canAdvance && (
-                                <span className="text-[8px] md:text-[7.5px] font-mono font-black text-amber-950 bg-amber-200 border border-amber-400 px-1 py-0.2 rounded mt-0.5 shadow-2xs leading-tight select-none">
-                                  ⚡ PODE ADIANTAR
+                                <span className="text-[6.5px] sm:text-[7.5px] font-mono font-black text-amber-950 bg-amber-200 border border-amber-400 px-0.5 py-0.2 rounded mt-0.5 shadow-2xs leading-none select-none">
+                                  ⚡ ADIANTAR
                                 </span>
                               )}
 
                               {/* Suffix tag (PIC, EO, PV, CL, etc.) */}
                               {!asg.isMainSubject && !canAdvance && (
-                                <span className="text-[8.5px] md:text-[8px] font-mono font-black text-amber-900 mt-0.5 bg-amber-100 px-1 py-0.2 rounded border border-amber-300 border-b-2 border-b-amber-400 leading-none shadow-xs">
+                                <span className="text-[6.5px] sm:text-[8px] font-mono font-black text-amber-900 mt-0.5 bg-amber-100 px-0.5 py-0.2 rounded border border-amber-300 leading-none shadow-xs">
                                   {asg.subject}
                                 </span>
                               )}
 
                               {/* Preview do texto anotado */}
                               {hasNote(asg.teacher, period.slot.id, cName) && (
-                                <span className="text-[8px] font-sans font-black text-amber-950 bg-amber-100/90 px-1 py-0.5 rounded border border-amber-200 mt-1 max-w-[95%] truncate text-center block leading-none select-none shadow-2xs">
+                                <span className="text-[6.5px] sm:text-[7.5px] font-sans font-black text-amber-950 bg-amber-100/90 px-0.5 py-0.2 rounded border border-amber-200 mt-0.5 max-w-[98%] truncate text-center block leading-none select-none shadow-2xs">
                                   {getNoteContent(asg.teacher, period.slot.id, cName)}
                                 </span>
                               )}
