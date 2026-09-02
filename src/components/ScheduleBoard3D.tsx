@@ -568,9 +568,12 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
                     <span className="text-xs font-mono font-bold">{period.slot.startTime} - {period.slot.endTime}</span>
                   </div>
 
-                  {/* Grid de turmas em 2 colunas lado a lado (2 turmas por linha: 1601 | 1602, 1603 | 1701, ...) */}
-                  <div className="grid grid-cols-2 gap-2 p-2 bg-slate-50/30">
-                    {currentDaySchedule.classNames.map(cName => {
+                  {/* Grid de 2 colunas verticais exatas: Coluna 1 (1601, 1602, 1603, 1701, 1702, 1703) e Coluna 2 (1801, 1802, 1901, 1902, 1903...) */}
+                  {(() => {
+                    const leftColClasses = currentDaySchedule.classNames.filter(c => c.startsWith('16') || c.startsWith('17'));
+                    const rightColClasses = currentDaySchedule.classNames.filter(c => !c.startsWith('16') && !c.startsWith('17'));
+
+                    const renderClassCard = (cName: string) => {
                       const asg = period.classes[cName];
                       const isEmpty = !asg || asg.isVacant;
 
@@ -592,98 +595,112 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
                         );
                       }
 
-                        const isAbsentCell = asg.teacher.startsWith('FALTA') || asg.raw.startsWith('FALTA');
-                        const isRelievedCell = asg.teacher.startsWith('LIBERADO') || asg.subject.startsWith('Adiantada');
+                      const isAbsentCell = asg.teacher.startsWith('FALTA') || asg.raw.startsWith('FALTA');
+                      const isRelievedCell = asg.teacher.startsWith('LIBERADO') || asg.subject.startsWith('Adiantada');
 
-                        const selUpper = selectedTeacher ? selectedTeacher.name.toUpperCase() : '';
-                        const asgTeacherUpper = asg.teacher.toUpperCase();
-                        const asgRawUpper = asg.raw.toUpperCase();
+                      const selUpper = selectedTeacher ? selectedTeacher.name.toUpperCase() : '';
+                      const asgTeacherUpper = asg.teacher.toUpperCase();
+                      const asgRawUpper = asg.raw.toUpperCase();
 
-                        // Se a célula pertence ao professor selecionado (mesmo se for uma FALTA dele, ou aula LIBERADA dele)
-                        const isTargetTeacher = selectedTeacher
-                          ? asgTeacherUpper === selUpper ||
-                            asgTeacherUpper.includes(`(${selUpper})`) ||
-                            asgTeacherUpper.includes(`FALTA (${selUpper})`) ||
-                            asgTeacherUpper.includes(`FALTA: ${selUpper}`) ||
-                            asgTeacherUpper.includes(`${selUpper} (LIBERADO)`) ||
-                            asgRawUpper.includes(selUpper)
-                          : false;
+                      // Se a célula pertence ao professor selecionado (mesmo se for uma FALTA dele, ou aula LIBERADA dele)
+                      const isTargetTeacher = selectedTeacher
+                        ? asgTeacherUpper === selUpper ||
+                          asgTeacherUpper.includes(`(${selUpper})`) ||
+                          asgTeacherUpper.includes(`FALTA (${selUpper})`) ||
+                          asgTeacherUpper.includes(`FALTA: ${selUpper}`) ||
+                          asgTeacherUpper.includes(`${selUpper} (LIBERADO)`) ||
+                          asgRawUpper.includes(selUpper)
+                        : false;
 
-                        const isTargetSubject =
-                          selectedSubject === 'TODAS' ||
-                          asg.subject.toUpperCase().includes(selectedSubject.toUpperCase());
+                      const isTargetSubject =
+                        selectedSubject === 'TODAS' ||
+                        asg.subject.toUpperCase().includes(selectedSubject.toUpperCase());
 
-                        // Oportunidade: se a turma está vaga por falta e o professor selecionado pode adiantá-la
-                        const canAdvance = isAbsentCell && selectedTeacher && !isTargetTeacher
-                          ? checkCanAdvanceClass(selectedTeacher.name, currentDaySchedule, period.slot.id, cName)
-                          : false;
+                      // Oportunidade: se a turma está vaga por falta e o professor selecionado pode adiantá-la
+                      const canAdvance = isAbsentCell && selectedTeacher && !isTargetTeacher
+                        ? checkCanAdvanceClass(selectedTeacher.name, currentDaySchedule, period.slot.id, cName)
+                        : false;
 
-                        const isHighlighted = isTargetTeacher && isTargetSubject;
+                      const isHighlighted = isTargetTeacher && isTargetSubject;
 
-                        // FALTAS, AULAS LIBERADAS e OPORTUNIDADES NUNCA SÃO ESMAECIDAS!
-                        const isDimmed = selectedTeacher !== null && !isHighlighted && !isAbsentCell && !isRelievedCell && !canAdvance;
+                      // FALTAS, AULAS LIBERADAS e OPORTUNIDADES NUNCA SÃO ESMAECIDAS!
+                      const isDimmed = selectedTeacher !== null && !isHighlighted && !isAbsentCell && !isRelievedCell && !canAdvance;
 
-                        const colorClass = isAbsentCell
-                          ? 'text-rose-700 font-black'
-                          : isRelievedCell
-                          ? 'text-emerald-700 font-black'
-                          : TEACHER_COLORS_LIGHT[asg.teacher.toUpperCase()] || 'text-slate-800 font-black';
+                      const colorClass = isAbsentCell
+                        ? 'text-rose-700 font-black'
+                        : isRelievedCell
+                        ? 'text-emerald-700 font-black'
+                        : TEACHER_COLORS_LIGHT[asg.teacher.toUpperCase()] || 'text-slate-800 font-black';
 
-                        return (
-                          <div
-                            key={cName}
-                            onClick={() => handleCellClick(asg, period.slot)}
-                            className={`p-2.5 rounded-2xl transition-all duration-150 cursor-pointer min-h-[68px] flex flex-col justify-between select-none ${
-                              isDimmed ? 'opacity-15 grayscale-[80%]' : ''
-                            } ${
-                              isHighlighted
-                                ? isAbsentCell
-                                  ? 'bg-gradient-to-b from-rose-50 via-white to-rose-100/80 border-2 border-rose-500 border-b-[5px] border-b-rose-600 ring-2 ring-rose-400 shadow-md'
-                                  : isRelievedCell
-                                  ? 'bg-gradient-to-b from-emerald-50 via-white to-emerald-100/80 border-2 border-emerald-500 border-b-[5px] border-b-emerald-600 ring-2 ring-emerald-400 shadow-md'
-                                  : 'bg-gradient-to-b from-cyan-50 via-white to-cyan-50/80 border-2 border-cyan-500 border-b-[5px] border-b-cyan-600 shadow-[0_6px_12px_rgba(2,132,199,0.3),inset_0_1px_0_rgba(255,255,255,1)] -translate-y-0.5'
-                                : canAdvance
-                                ? 'bg-gradient-to-b from-amber-50 via-amber-100/80 to-amber-200/90 border-2 border-amber-500 border-b-[5px] border-b-amber-600 ring-2 ring-amber-400 shadow-md animate-pulse'
-                                : isAbsentCell
-                                ? 'bg-gradient-to-b from-rose-50 to-rose-100/70 border border-rose-300 border-b-[4px] border-b-rose-400 shadow-sm'
+                      return (
+                        <div
+                          key={cName}
+                          onClick={() => handleCellClick(asg, period.slot)}
+                          className={`p-2.5 rounded-2xl transition-all duration-150 cursor-pointer min-h-[68px] flex flex-col justify-between select-none ${
+                            isDimmed ? 'opacity-15 grayscale-[80%]' : ''
+                          } ${
+                            isHighlighted
+                              ? isAbsentCell
+                                ? 'bg-gradient-to-b from-rose-50 via-white to-rose-100/80 border-2 border-rose-500 border-b-[5px] border-b-rose-600 ring-2 ring-rose-400 shadow-md'
                                 : isRelievedCell
-                                ? 'bg-gradient-to-b from-emerald-50 to-emerald-100/70 border border-emerald-300 border-b-[4px] border-b-emerald-400 shadow-sm'
-                                : 'bg-gradient-to-b from-white to-slate-50 border border-slate-200/90 border-b-[4px] border-b-slate-300 shadow-[0_4px_8px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.9)] hover:-translate-y-0.5 active:translate-y-[1px] active:border-b-[2px] active:shadow-inner'
-                            }`}
-                          >
-                            <div className="flex justify-between items-center w-full">
-                              <span className="text-[12.5px] font-black text-slate-800 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-lg shadow-2xs uppercase tracking-tight">
-                                TURMA {cName}
-                              </span>
-                              {canAdvance ? (
-                                <span className="text-[9px] font-mono font-black text-amber-950 bg-amber-200 border border-amber-400 px-1.5 py-0.5 rounded-md shadow-2xs">
-                                  ⚡ PODE ADIANTAR
-                                </span>
-                              ) : (
-                                !asg.isMainSubject && (
-                                  <span className="text-[9px] font-mono font-black text-amber-900 bg-amber-100 border border-amber-200 px-1.5 py-0.5 rounded-md scale-90 origin-right">
-                                    {asg.subject}
-                                  </span>
-                                )
-                              )}
-                            </div>
-                            <span className={`text-[14.5px] leading-tight font-black mt-2 break-words flex items-center gap-1.5 uppercase tracking-wide drop-shadow-[0_1px_1.5px_rgba(0,0,0,0.22)] ${colorClass}`}>
-                              {asg.teacher}
-                              {hasNote(asg.teacher, period.slot.id, cName) && (
-                                <FileText className="w-3.5 h-3.5 text-amber-500 animate-pulse shrink-0 drop-shadow-none" />
-                              )}
+                                ? 'bg-gradient-to-b from-emerald-50 via-white to-emerald-100/80 border-2 border-emerald-500 border-b-[5px] border-b-emerald-600 ring-2 ring-emerald-400 shadow-md'
+                                : 'bg-gradient-to-b from-cyan-50 via-white to-cyan-50/80 border-2 border-cyan-500 border-b-[5px] border-b-cyan-600 shadow-[0_6px_12px_rgba(2,132,199,0.3),inset_0_1px_0_rgba(255,255,255,1)] -translate-y-0.5'
+                              : canAdvance
+                              ? 'bg-gradient-to-b from-amber-50 via-amber-100/80 to-amber-200/90 border-2 border-amber-500 border-b-[5px] border-b-amber-600 ring-2 ring-amber-400 shadow-md animate-pulse'
+                              : isAbsentCell
+                              ? 'bg-gradient-to-b from-rose-50 to-rose-100/70 border border-rose-300 border-b-[4px] border-b-rose-400 shadow-sm'
+                              : isRelievedCell
+                              ? 'bg-gradient-to-b from-emerald-50 to-emerald-100/70 border border-emerald-300 border-b-[4px] border-b-emerald-400 shadow-sm'
+                              : 'bg-gradient-to-b from-white to-slate-50 border border-slate-200/90 border-b-[4px] border-b-slate-300 shadow-[0_4px_8px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.9)] hover:-translate-y-0.5 active:translate-y-[1px] active:border-b-[2px] active:shadow-inner'
+                          }`}
+                        >
+                          <div className="flex justify-between items-center w-full">
+                            <span className="text-[12.5px] font-black text-slate-800 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-lg shadow-2xs uppercase tracking-tight">
+                              TURMA {cName}
                             </span>
-
-                            {/* Preview do texto anotado no mobile */}
-                            {hasNote(asg.teacher, period.slot.id, cName) && (
-                              <span className="text-[9.5px] font-sans font-bold text-amber-950 bg-amber-100/80 px-1.5 py-0.5 rounded border border-amber-200 mt-1.5 max-w-full break-words text-left block leading-tight shadow-3xs">
-                                {getNoteContent(asg.teacher, period.slot.id, cName)}
+                            {canAdvance ? (
+                              <span className="text-[9px] font-mono font-black text-amber-950 bg-amber-200 border border-amber-400 px-1.5 py-0.5 rounded-md shadow-2xs">
+                                ⚡ PODE ADIANTAR
                               </span>
+                            ) : (
+                              !asg.isMainSubject && (
+                                <span className="text-[9px] font-mono font-black text-amber-900 bg-amber-100 border border-amber-200 px-1.5 py-0.5 rounded-md scale-90 origin-right">
+                                  {asg.subject}
+                                </span>
+                              )
                             )}
                           </div>
-                        );
-                    })}
-                  </div>
+                          <span className={`text-[14.5px] leading-tight font-black mt-2 break-words flex items-center gap-1.5 uppercase tracking-wide drop-shadow-[0_1px_1.5px_rgba(0,0,0,0.22)] ${colorClass}`}>
+                            {asg.teacher}
+                            {hasNote(asg.teacher, period.slot.id, cName) && (
+                              <FileText className="w-3.5 h-3.5 text-amber-500 animate-pulse shrink-0 drop-shadow-none" />
+                            )}
+                          </span>
+
+                          {/* Preview do texto anotado no mobile */}
+                          {hasNote(asg.teacher, period.slot.id, cName) && (
+                            <span className="text-[9.5px] font-sans font-bold text-amber-950 bg-amber-100/80 px-1.5 py-0.5 rounded border border-amber-200 mt-1.5 max-w-full break-words text-left block leading-tight shadow-3xs">
+                              {getNoteContent(asg.teacher, period.slot.id, cName)}
+                            </span>
+                          )}
+                        </div>
+                      );
+                    };
+
+                    return (
+                      <div className="grid grid-cols-2 gap-2 p-2 bg-slate-50/30">
+                        {/* Coluna 1: 1601, 1602, 1603, 1701, 1702, 1703 */}
+                        <div className="flex flex-col gap-2">
+                          {leftColClasses.map(cName => renderClassCard(cName))}
+                        </div>
+
+                        {/* Coluna 2: 1801, 1802, 1901, 1902, 1903... */}
+                        <div className="flex flex-col gap-2">
+                          {rightColClasses.map(cName => renderClassCard(cName))}
+                        </div>
+                      </div>
+                    );
+                  })()}
                 </div>
               </React.Fragment>
             );
