@@ -568,8 +568,8 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
                     <span className="text-xs font-mono font-bold">{period.slot.startTime} - {period.slot.endTime}</span>
                   </div>
 
-                  {/* Grid de turmas (2 colunas para garantir excelente espaço lateral de leitura sem truncation) */}
-                  <div className="grid grid-cols-2 gap-2 p-2 bg-slate-50/30">
+                  {/* Lista vertical de turmas (1 coluna para ordem estrita: 1601, 1602, 1603, ...) */}
+                  <div className="flex flex-col gap-2 p-2.5 bg-slate-50/30">
                     {currentDaySchedule.classNames.map(cName => {
                       const asg = period.classes[cName];
                       const isEmpty = !asg || asg.isVacant;
@@ -578,14 +578,14 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
                         return (
                           <div
                             key={cName}
-                            className={`p-2.5 rounded-2xl border border-dashed border-slate-200 flex flex-col justify-center items-center text-slate-400 min-h-[64px] ${
+                            className={`p-2.5 rounded-xl border border-dashed border-slate-200 flex items-center justify-between text-slate-400 bg-slate-50/40 ${
                               selectedTeacher ? 'opacity-20' : 'opacity-40'
                             }`}
                           >
-                            <span className="text-[12.5px] font-black text-slate-600 bg-slate-100 border border-slate-200 px-2.5 py-0.5 rounded-lg shadow-2xs uppercase tracking-tight">
-                              TURMA {cName}
+                            <span className="text-xs font-black text-slate-500 bg-slate-100 border border-slate-200 px-2.5 py-0.5 rounded-lg shadow-2xs uppercase tracking-tight">
+                              Turma {cName}
                             </span>
-                            <span className="text-xs font-mono font-bold mt-1">
+                            <span className="text-xs font-mono font-bold">
                               {asg?.raw === 'VAGO' ? <span className="text-rose-500 font-black">VAGO</span> : '-'}
                             </span>
                           </div>
@@ -633,52 +633,60 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
                           <div
                             key={cName}
                             onClick={() => handleCellClick(asg, period.slot)}
-                            className={`p-2.5 rounded-2xl transition-all duration-150 cursor-pointer min-h-[68px] flex flex-col justify-between select-none ${
-                              isDimmed ? 'opacity-15 grayscale-[80%]' : ''
+                            className={`p-3 rounded-2xl transition-all duration-150 cursor-pointer flex flex-col gap-1.5 select-none ${
+                              isDimmed ? 'opacity-20 grayscale-[80%]' : ''
                             } ${
                               isHighlighted
                                 ? isAbsentCell
-                                  ? 'bg-gradient-to-b from-rose-50 via-white to-rose-100/80 border-2 border-rose-500 border-b-[5px] border-b-rose-600 ring-2 ring-rose-400 shadow-md'
+                                  ? 'bg-gradient-to-r from-rose-50 via-white to-rose-100/80 border-2 border-rose-500 border-b-[5px] border-b-rose-600 ring-2 ring-rose-400 shadow-md'
                                   : isRelievedCell
-                                  ? 'bg-gradient-to-b from-emerald-50 via-white to-emerald-100/80 border-2 border-emerald-500 border-b-[5px] border-b-emerald-600 ring-2 ring-emerald-400 shadow-md'
-                                  : 'bg-gradient-to-b from-cyan-50 via-white to-cyan-50/80 border-2 border-cyan-500 border-b-[5px] border-b-cyan-600 shadow-[0_6px_12px_rgba(2,132,199,0.3),inset_0_1px_0_rgba(255,255,255,1)] -translate-y-0.5'
+                                  ? 'bg-gradient-to-r from-emerald-50 via-white to-emerald-100/80 border-2 border-emerald-500 border-b-[5px] border-b-emerald-600 ring-2 ring-emerald-400 shadow-md'
+                                  : 'bg-gradient-to-r from-cyan-50 via-white to-cyan-50/80 border-2 border-cyan-500 border-b-[5px] border-b-cyan-600 shadow-[0_6px_12px_rgba(2,132,199,0.3),inset_0_1px_0_rgba(255,255,255,1)] -translate-y-0.5'
                                 : canAdvance
-                                ? 'bg-gradient-to-b from-amber-50 via-amber-100/80 to-amber-200/90 border-2 border-amber-500 border-b-[5px] border-b-amber-600 ring-2 ring-amber-400 shadow-md animate-pulse'
+                                ? 'bg-gradient-to-r from-amber-50 via-amber-100/80 to-amber-200/90 border-2 border-amber-500 border-b-[5px] border-b-amber-600 ring-2 ring-amber-400 shadow-md animate-pulse'
                                 : isAbsentCell
-                                ? 'bg-gradient-to-b from-rose-50 to-rose-100/70 border border-rose-300 border-b-[4px] border-b-rose-400 shadow-sm'
+                                ? 'bg-gradient-to-r from-rose-50 to-rose-100/70 border border-rose-300 border-b-[4px] border-b-rose-400 shadow-sm'
                                 : isRelievedCell
-                                ? 'bg-gradient-to-b from-emerald-50 to-emerald-100/70 border border-emerald-300 border-b-[4px] border-b-emerald-400 shadow-sm'
-                                : 'bg-gradient-to-b from-white to-slate-50 border border-slate-200/90 border-b-[4px] border-b-slate-300 shadow-[0_4px_8px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.9)] hover:-translate-y-0.5 active:translate-y-[1px] active:border-b-[2px] active:shadow-inner'
+                                ? 'bg-gradient-to-r from-emerald-50 to-emerald-100/70 border border-emerald-300 border-b-[4px] border-b-emerald-400 shadow-sm'
+                                : 'bg-gradient-to-r from-white to-slate-50 border border-slate-200/90 border-b-[4px] border-b-slate-300 shadow-[0_4px_8px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.9)] hover:-translate-y-0.5 active:translate-y-[1px] active:border-b-[2px] active:shadow-inner'
                             }`}
                           >
-                            <div className="flex justify-between items-center w-full">
-                              <span className="text-[12.5px] font-black text-slate-800 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-lg shadow-2xs uppercase tracking-tight">
-                                TURMA {cName}
-                              </span>
-                              {canAdvance ? (
-                                <span className="text-[9px] font-mono font-black text-amber-950 bg-amber-200 border border-amber-400 px-1.5 py-0.5 rounded-md shadow-2xs">
-                                  ⚡ PODE ADIANTAR
+                            <div className="flex items-center justify-between w-full">
+                              <div className="flex items-center gap-2">
+                                <span className="text-xs font-black text-slate-800 bg-slate-100 border border-slate-300 px-2.5 py-1 rounded-lg shadow-2xs uppercase tracking-wider">
+                                  Turma {cName}
                                 </span>
-                              ) : (
-                                !asg.isMainSubject && (
-                                  <span className="text-[9px] font-mono font-black text-amber-900 bg-amber-100 border border-amber-200 px-1.5 py-0.5 rounded-md scale-90 origin-right">
+                                {!asg.isMainSubject && (
+                                  <span className="text-[10px] font-mono font-black text-amber-900 bg-amber-100 border border-amber-300 px-2 py-0.5 rounded-md shadow-2xs">
                                     {asg.subject}
                                   </span>
-                                )
-                              )}
+                                )}
+                              </div>
+
+                              <div className="flex items-center gap-1.5">
+                                {canAdvance && (
+                                  <span className="text-[10px] font-mono font-black text-amber-950 bg-amber-200 border border-amber-400 px-2 py-0.5 rounded-md shadow-xs animate-pulse">
+                                    ⚡ PODE ADIANTAR
+                                  </span>
+                                )}
+                                {hasNote(asg.teacher, period.slot.id, cName) && (
+                                  <FileText className="w-4 h-4 text-amber-500 animate-pulse shrink-0 drop-shadow-none" />
+                                )}
+                              </div>
                             </div>
-                            <span className={`text-[14.5px] leading-tight font-black mt-2 break-words flex items-center gap-1.5 uppercase tracking-wide drop-shadow-[0_1px_1.5px_rgba(0,0,0,0.22)] ${colorClass}`}>
-                              {asg.teacher}
-                              {hasNote(asg.teacher, period.slot.id, cName) && (
-                                <FileText className="w-3.5 h-3.5 text-amber-500 animate-pulse shrink-0 drop-shadow-none" />
-                              )}
-                            </span>
+
+                            <div className="flex items-center justify-between mt-0.5">
+                              <span className={`text-[15.5px] leading-tight font-black uppercase tracking-wide drop-shadow-[0_1px_1.5px_rgba(0,0,0,0.2)] ${colorClass}`}>
+                                {asg.teacher}
+                              </span>
+                            </div>
 
                             {/* Preview do texto anotado no mobile */}
                             {hasNote(asg.teacher, period.slot.id, cName) && (
-                              <span className="text-[9.5px] font-sans font-bold text-amber-950 bg-amber-100/80 px-1.5 py-0.5 rounded border border-amber-200 mt-1.5 max-w-full break-words text-left block leading-tight shadow-3xs">
+                              <div className="text-[11px] font-sans font-bold text-amber-950 bg-amber-100/90 px-2.5 py-1 rounded-lg border border-amber-200 mt-1 break-words text-left leading-snug shadow-3xs">
+                                <span className="text-amber-800 font-extrabold mr-1">📝 Anotação:</span>
                                 {getNoteContent(asg.teacher, period.slot.id, cName)}
-                              </span>
+                              </div>
                             )}
                           </div>
                         );
