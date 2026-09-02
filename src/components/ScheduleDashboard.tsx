@@ -109,11 +109,40 @@ export const ScheduleDashboard: React.FC = () => {
     return d === 0 || d === 6; // Sunday = 0, Saturday = 6
   }, [tracker.now]);
 
-  // Teacher classes for current selected day
+  // Teacher classes for current selected day (from effectiveDaySchedule)
   const teacherDayPeriods = useMemo(() => {
     if (!selectedTeacher) return [];
-    return getTeacherClassesForDay(selectedTeacher.name, tracker.selectedDayName, selectedSubject);
-  }, [selectedTeacher, tracker.selectedDayName, selectedSubject]);
+    const selUpper = selectedTeacher.name.toUpperCase();
+
+    return effectiveDaySchedule.periods.map(period => {
+      const matchingAssignments: TeacherAssignment[] = [];
+      Object.values(period.classes).forEach(asg => {
+        if (!asg || asg.isVacant) return;
+        const tUpper = asg.teacher.toUpperCase();
+        const rawUpper = asg.raw.toUpperCase();
+
+        const matches =
+          tUpper === selUpper ||
+          tUpper.includes(`(${selUpper})`) ||
+          tUpper.includes(`FALTA (${selUpper})`) ||
+          tUpper.includes(`FALTA: ${selUpper}`) ||
+          tUpper.includes(`${selUpper} (LIBERADO)`) ||
+          rawUpper.includes(selUpper);
+
+        if (matches) {
+          if (selectedSubject === 'TODAS' || asg.subject.toUpperCase().includes(selectedSubject.toUpperCase())) {
+            matchingAssignments.push(asg);
+          }
+        }
+      });
+
+      return {
+        slot: period.slot,
+        assignments: matchingAssignments,
+        hasTeacher: matchingAssignments.length > 0,
+      };
+    });
+  }, [selectedTeacher, effectiveDaySchedule, selectedSubject]);
 
   const classesCountToday = useMemo(() => {
     return teacherDayPeriods.reduce((acc, p) => acc + p.assignments.length, 0);
@@ -237,6 +266,7 @@ export const ScheduleDashboard: React.FC = () => {
           onSelectSubject={setSelectedSubject}
           classesCountToday={classesCountToday}
           currentDayName={tracker.selectedDayName}
+          absentTeachers={currentAbsentTeachers}
         />
 
         {/* Status Bar / Toggle for Adjusted Schedule Mode (when absences exist) */}

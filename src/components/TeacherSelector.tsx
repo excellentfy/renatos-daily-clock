@@ -11,6 +11,7 @@ interface TeacherSelectorProps {
   onSelectSubject: (subject: string) => void;
   classesCountToday: number;
   currentDayName: string;
+  absentTeachers?: string[];
 }
 
 export const TeacherSelector: React.FC<TeacherSelectorProps> = ({
@@ -21,6 +22,7 @@ export const TeacherSelector: React.FC<TeacherSelectorProps> = ({
   onSelectSubject,
   classesCountToday,
   currentDayName,
+  absentTeachers = [],
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const chipsRef = useRef<HTMLDivElement>(null);
@@ -98,6 +100,8 @@ export const TeacherSelector: React.FC<TeacherSelectorProps> = ({
 
         {teachers.map(t => {
           const isCurrent = selectedTeacher?.name === t.name;
+          const isAbsent = absentTeachers.map(x => x.toUpperCase()).includes(t.name.toUpperCase());
+
           return (
             <button
               key={t.name}
@@ -107,12 +111,21 @@ export const TeacherSelector: React.FC<TeacherSelectorProps> = ({
               }}
               className={`px-2.5 md:px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 border ${
                 isCurrent
-                  ? 'border-cyan-500 bg-cyan-50 text-cyan-900 shadow-md font-black scale-105 ring-1 ring-cyan-400'
+                  ? isAbsent
+                    ? 'border-rose-500 bg-rose-50 text-rose-900 shadow-md font-black scale-105 ring-2 ring-rose-400'
+                    : 'border-cyan-500 bg-cyan-50 text-cyan-900 shadow-md font-black scale-105 ring-1 ring-cyan-400'
+                  : isAbsent
+                  ? 'border-rose-200 bg-rose-50/60 text-rose-800 hover:bg-rose-100'
                   : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:text-slate-900'
               }`}
             >
-              <div className="w-2.5 h-2.5 rounded-full shadow-sm" style={{ backgroundColor: t.color }} />
+              <div className="w-2.5 h-2.5 rounded-full shadow-sm" style={{ backgroundColor: isAbsent ? '#f43f5e' : t.color }} />
               <span>{t.name}</span>
+              {isAbsent && (
+                <span className="px-1 py-0.2 rounded bg-rose-500 text-white text-[8.5px] font-black uppercase tracking-tight">
+                  Falta
+                </span>
+              )}
             </button>
           );
         })}
