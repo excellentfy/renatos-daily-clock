@@ -578,13 +578,15 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
                         return (
                           <div
                             key={cName}
-                            className={`p-2 rounded-xl border border-dashed border-slate-200 flex flex-col justify-center items-center text-slate-400 min-h-[56px] ${
+                            className={`p-2.5 rounded-2xl border border-dashed border-slate-200 flex flex-col justify-center items-center text-slate-400 min-h-[64px] ${
                               selectedTeacher ? 'opacity-20' : 'opacity-40'
                             }`}
                           >
-                            <span className="text-[9px] font-bold text-slate-400">Turma {cName}</span>
-                            <span className="text-[10px] font-mono mt-0.5">
-                              {asg?.raw === 'VAGO' ? <span className="text-rose-500 font-bold">VAGO</span> : '-'}
+                            <span className="text-[12.5px] font-black text-slate-600 bg-slate-100 border border-slate-200 px-2.5 py-0.5 rounded-lg shadow-2xs uppercase tracking-tight">
+                              TURMA {cName}
+                            </span>
+                            <span className="text-xs font-mono font-bold mt-1">
+                              {asg?.raw === 'VAGO' ? <span className="text-rose-500 font-black">VAGO</span> : '-'}
                             </span>
                           </div>
                         );
@@ -631,7 +633,7 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
                           <div
                             key={cName}
                             onClick={() => handleCellClick(asg, period.slot)}
-                            className={`p-2.5 rounded-2xl transition-all duration-150 cursor-pointer min-h-[64px] flex flex-col justify-between select-none ${
+                            className={`p-2.5 rounded-2xl transition-all duration-150 cursor-pointer min-h-[68px] flex flex-col justify-between select-none ${
                               isDimmed ? 'opacity-15 grayscale-[80%]' : ''
                             } ${
                               isHighlighted
@@ -650,31 +652,31 @@ export const ScheduleBoard3D: React.FC<ScheduleBoard3DProps> = ({
                             }`}
                           >
                             <div className="flex justify-between items-center w-full">
-                              <span className="text-[9px] font-bold text-slate-500 bg-slate-100 border border-slate-200 px-1 py-0.2 rounded">
-                                T. {cName}
+                              <span className="text-[12.5px] font-black text-slate-800 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-lg shadow-2xs uppercase tracking-tight">
+                                TURMA {cName}
                               </span>
                               {canAdvance ? (
-                                <span className="text-[8px] font-mono font-black text-amber-950 bg-amber-200 border border-amber-400 px-1 py-0.2 rounded shadow-2xs">
+                                <span className="text-[9px] font-mono font-black text-amber-950 bg-amber-200 border border-amber-400 px-1.5 py-0.5 rounded-md shadow-2xs">
                                   ⚡ PODE ADIANTAR
                                 </span>
                               ) : (
                                 !asg.isMainSubject && (
-                                  <span className="text-[8px] font-mono font-black text-amber-900 bg-amber-100 border border-amber-200 px-1 py-0.2 rounded scale-90 origin-right">
+                                  <span className="text-[9px] font-mono font-black text-amber-900 bg-amber-100 border border-amber-200 px-1.5 py-0.5 rounded-md scale-90 origin-right">
                                     {asg.subject}
                                   </span>
                                 )
                               )}
                             </div>
-                            <span className={`text-[13.5px] leading-tight font-black mt-1.5 break-words flex items-center gap-1.5 uppercase tracking-wide drop-shadow-[0_1px_1.5px_rgba(0,0,0,0.22)] ${colorClass}`}>
+                            <span className={`text-[14.5px] leading-tight font-black mt-2 break-words flex items-center gap-1.5 uppercase tracking-wide drop-shadow-[0_1px_1.5px_rgba(0,0,0,0.22)] ${colorClass}`}>
                               {asg.teacher}
                               {hasNote(asg.teacher, period.slot.id, cName) && (
-                                <FileText className="w-3 h-3 text-amber-500 animate-pulse shrink-0 drop-shadow-none" />
+                                <FileText className="w-3.5 h-3.5 text-amber-500 animate-pulse shrink-0 drop-shadow-none" />
                               )}
                             </span>
 
                             {/* Preview do texto anotado no mobile */}
                             {hasNote(asg.teacher, period.slot.id, cName) && (
-                              <span className="text-[9px] font-sans font-bold text-amber-950 bg-amber-100/80 px-1.5 py-0.5 rounded border border-amber-200 mt-1 max-w-full break-words text-left block leading-tight shadow-3xs">
+                              <span className="text-[9.5px] font-sans font-bold text-amber-950 bg-amber-100/80 px-1.5 py-0.5 rounded border border-amber-200 mt-1.5 max-w-full break-words text-left block leading-tight shadow-3xs">
                                 {getNoteContent(asg.teacher, period.slot.id, cName)}
                               </span>
                             )}
