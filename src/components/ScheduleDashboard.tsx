@@ -17,9 +17,7 @@ export const ScheduleDashboard: React.FC = () => {
   const teachers = useMemo(() => getAllTeachers(), []);
   
   // Selected teacher state: null means "Todos os Professores", or a specific TeacherMeta
-  const [selectedTeacher, setSelectedTeacher] = useState<TeacherMeta | null>(() => {
-    return teachers.find(t => t.name === 'RENATO') || teachers[0];
-  });
+  const [selectedTeacher, setSelectedTeacher] = useState<TeacherMeta | null>(null);
   
   const [selectedSubject, setSelectedSubject] = useState<string>('TODAS');
 
